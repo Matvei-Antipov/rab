@@ -29,9 +29,7 @@
         <DataTemplate DataType="{x:Type vm:ChatViewModel}">
             <views:ChatView />
         </DataTemplate>
-<DataTemplate DataType="{x:Type vm:SettingsViewModel}">
-            <views:SettingsView />
-        </DataTemplate>
+
         <DataTemplate DataType="{x:Type vm:GeneratorViewModel}">
             <views:GeneratorView />
         </DataTemplate>
@@ -159,18 +157,12 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1">
-                <ContentControl Content="{Binding CurrentViewModel}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Focusable="False"
-                                Margin="0"/>
-                <ContentControl Content="{Binding CurrentView}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Focusable="False"
-                                Margin="0"/>
-            </Grid>
+            <ContentControl Grid.Row="1"
+                            Content="{Binding CurrentViewModel}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Focusable="False"
+                            Margin="0"/>
         </Grid>
     </Grid>
 </Window>

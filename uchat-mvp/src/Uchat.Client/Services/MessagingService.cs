@@ -359,6 +359,7 @@ namespace Uchat.Client.Services
                     return new List<MessageDto>();
                 }
 
+                // CRITICAL: Validate all messages belong to the requested chat
                 var validatedMessages = messages.Where(m => m.ChatId == chatId).ToList();
 
                 if (validatedMessages.Count != messages.Count)
@@ -380,27 +381,6 @@ namespace Uchat.Client.Services
             catch (Exception ex)
             {
                 this.logger.Error(ex, "Failed to retrieve message history for chat {ChatId}", chatId);
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<List<MessageDto>> SearchMessagesAsync(string chatId, string query, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var response = await this.httpClient.GetAsync(
-                    $"/api/messages/{chatId}/search?query={Uri.EscapeDataString(query)}",
-                    cancellationToken);
-
-                response.EnsureSuccessStatusCode();
-
-                var messages = await response.Content.ReadFromJsonAsync<List<MessageDto>>(cancellationToken);
-                return messages ?? new List<MessageDto>();
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex, "Failed to search messages in chat {ChatId}", chatId);
                 throw;
             }
         }
@@ -638,6 +618,7 @@ namespace Uchat.Client.Services
                     }
                     catch (WebSocketException wsEx)
                     {
+                        // Connection was closed unexpectedly
                         if (this.webSocket == null || this.webSocket.State == WebSocketState.Aborted || this.webSocket.State == WebSocketState.Closed)
                         {
                             this.logger.Debug(wsEx, "WebSocket closed during receive: {State}", this.webSocket?.State ?? WebSocketState.None);
@@ -646,6 +627,7 @@ namespace Uchat.Client.Services
                             break;
                         }
 
+                        // Re-throw other WebSocket exceptions
                         this.logger.Warning(wsEx, "Unexpected WebSocket exception while receiving data");
                         throw;
                     }

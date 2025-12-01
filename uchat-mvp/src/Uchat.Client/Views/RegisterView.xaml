@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:Uchat.Client.Converters"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="500">
+             d:DesignHeight="750" d:DesignWidth="500">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -14,28 +14,26 @@
 
         <Style x:Key="FormLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#AAAAAA"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,10,0,3"/> 
-        </Style>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,15,0,5"/> </Style>
 
         <Style x:Key="GlassTextBox" TargetType="TextBox">
             <Setter Property="Background" Value="#25FFFFFF"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="12,0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,8"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="CaretBrush" Value="White"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border x:Name="border" Height="36" Background="{TemplateBinding Background}" CornerRadius="8"
+                        <Border x:Name="border" Height="40" Background="{TemplateBinding Background}" CornerRadius="6"
                                 BorderBrush="#30FFFFFF" BorderThickness="1">
                             <Grid>
                                 <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
                                 <TextBlock x:Name="Placeholder" Text="{TemplateBinding Tag}"
                                            Foreground="#88FFFFFF" IsHitTestVisible="False"
-                                           VerticalAlignment="Center" Margin="12,0,0,0"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"
                                            Visibility="Collapsed"/>
                             </Grid>
                         </Border>
@@ -65,14 +63,13 @@
             <Setter Property="Background" Value="#25FFFFFF"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="12,0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,8"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="CaretBrush" Value="White"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="PasswordBox">
-                        <Border x:Name="border" Height="36" Background="{TemplateBinding Background}" CornerRadius="8"
+                        <Border x:Name="border" Height="40" Background="{TemplateBinding Background}" CornerRadius="6"
                                 BorderBrush="#30FFFFFF" BorderThickness="1">
                             <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
                         </Border>
@@ -95,13 +92,13 @@
             <Setter Property="Background" Value="#35FFFFFF"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="15"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Height="42" Background="{TemplateBinding Background}" CornerRadius="8">
+                        <Border x:Name="border" Height="45" Background="{TemplateBinding Background}" CornerRadius="8">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -128,7 +125,7 @@
         </Grid.Background>
 
         <Border Width="420" VerticalAlignment="Center" HorizontalAlignment="Center"
-                CornerRadius="20" Background="#15FFFFFF" Padding="35,30">
+                CornerRadius="20" Background="#15FFFFFF" Padding="40">
             
             <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -143,14 +140,14 @@
             </Border.Effect>
 
             <StackPanel>
-                <TextBlock Text="Create account" Foreground="White" FontSize="26" FontWeight="ExtraBold"
+                <TextBlock Text="Create account" Foreground="White" FontSize="26" FontWeight="Bold"
                            HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,5"/>
 
                 <TextBlock Text="Join Uchat today" Foreground="#AAAAAA" FontSize="14"
-                           HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                           HorizontalAlignment="Center" Margin="0,0,0,25"/>
 
                 <StackPanel>
-                    <TextBlock Text="Username" Style="{StaticResource FormLabel}" Margin="0,0,0,3"/>
+                    <TextBlock Text="Username" Style="{StaticResource FormLabel}"/>
                     <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource GlassTextBox}"
                              Tag="Choose a username"/>
@@ -175,6 +172,11 @@
                     <PasswordBox x:Name="PasswordBox"
                                  Style="{StaticResource GlassPasswordBox}"
                                  PasswordChanged="PasswordBox_PasswordChanged"/>
+                    <TextBlock Text="Password must be at least 8 characters and contain uppercase, lowercase, and a digit"
+                               Foreground="#88AAAAAA"
+                               FontSize="11"
+                               Margin="0,5,0,0"
+                               TextWrapping="Wrap"/>
                 </StackPanel>
 
                 <StackPanel>
@@ -189,25 +191,25 @@
                            TextWrapping="Wrap"
                            TextAlignment="Center"
                            Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}"
-                           Margin="0,15,0,0" FontSize="12"/>
+                           Margin="0,15,0,0"/>
 
                 <TextBlock Text="{Binding SuccessMessage}"
                            Foreground="#66FF99"
                            TextWrapping="Wrap"
                            TextAlignment="Center"
                            Visibility="{Binding SuccessMessage, Converter={StaticResource NullToVisibilityConverter}}"
-                           Margin="0,15,0,0" FontSize="12"/>
+                           Margin="0,15,0,0"/>
 
-                <TextBlock Text="Creating account..." Foreground="#DDDDDD" HorizontalAlignment="Center" Margin="0,5,0,5"
+                <TextBlock Text="Creating account..." Foreground="#DDDDDD" HorizontalAlignment="Center" Margin="0,10,0,5"
                            Visibility="{Binding IsRegistering, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <Button Content="Create Account"
                         Command="{Binding RegisterCommand}"
                         Style="{StaticResource PrimaryButton}"
                         IsEnabled="{Binding IsRegistering, Converter={StaticResource InverseBooleanConverter}}"
-                        Margin="0,20,0,20"/>
+                        Margin="0,5,0,25"/>
 
-                <Border Background="#20000000" CornerRadius="10" Padding="4">
+                <Border Background="#20000000" CornerRadius="10" Padding="5">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

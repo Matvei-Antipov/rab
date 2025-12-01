@@ -20,24 +20,27 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="0,6"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Background" Value="{DynamicResource NavButtonBackgroundBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource IconBrush}"/>
+            <Setter Property="Background" Value="#33354E"/> <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder" CornerRadius="20" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <Border x:Name="ButtonBorder"
+                                CornerRadius="20"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
                             <Border.Effect>
-                                <DropShadowEffect Color="#000000" Direction="315" ShadowDepth="2" BlurRadius="4" Opacity="0.2"/>
+                                <DropShadowEffect Color="#000000" Direction="315" ShadowDepth="2" BlurRadius="4" Opacity="0.3"/>
                             </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource NavButtonHoverBrush}"/>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#4E517A"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource NavButtonPressedBrush}"/>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#2A2C40"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -46,47 +49,46 @@
         </Style>
 
         <Style TargetType="Button" x:Key="GlassActionButtonStyle">
-            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="30"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="15">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource NavButtonHoverBrush}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource IconBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+             <Setter Property="Background" Value="#25FFFFFF"/>
+             <Setter Property="Foreground" Value="White"/>
+             <Setter Property="BorderThickness" Value="0"/>
+             <Setter Property="Width" Value="30"/>
+             <Setter Property="Height" Value="30"/>
+             <Setter Property="Cursor" Value="Hand"/>
+             <Setter Property="Template">
+                 <Setter.Value>
+                     <ControlTemplate TargetType="Button">
+                         <Border Background="{TemplateBinding Background}" CornerRadius="15">
+                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                         </Border>
+                         <ControlTemplate.Triggers>
+                             <Trigger Property="IsMouseOver" Value="True">
+                                 <Setter Property="Background" Value="#40FFFFFF"/>
+                             </Trigger>
+                         </ControlTemplate.Triggers>
+                     </ControlTemplate>
+                 </Setter.Value>
+             </Setter>
         </Style>
 
         <Style x:Key="CircularIconButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="30"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="15">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+             <Setter Property="Background" Value="Transparent"/>
+             <Setter Property="BorderBrush" Value="Transparent"/>
+             <Setter Property="BorderThickness" Value="0"/>
+             <Setter Property="Width" Value="30"/>
+             <Setter Property="Height" Value="30"/>
+             <Setter Property="Padding" Value="0"/>
+             <Setter Property="Cursor" Value="Hand"/>
+             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+             <Setter Property="Template">
+                 <Setter.Value>
+                     <ControlTemplate TargetType="Button">
+                         <Border Background="{TemplateBinding Background}" CornerRadius="15">
+                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                         </Border>
+                     </ControlTemplate>
+                 </Setter.Value>
+             </Setter>
         </Style>
 
         <Style TargetType="ListBoxItem">
@@ -101,10 +103,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SearchInputBackgroundBrush}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#25FFFFFF"/>
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#35FFFFFF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -115,10 +117,23 @@
         <Style x:Key="GlassPanelBorderStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="18"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Background" Value="{DynamicResource GlassPanelBackgroundBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource GlassPanelBorderBrush}"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="#000000" Opacity="0.05"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#60FFFFFF" Offset="0.0"/>
+                        <GradientStop Color="#00FFFFFF" Offset="0.5"/>
+                        <GradientStop Color="#20FFFFFF" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- Template Selector for Message Items -->
         <selectors:MessageItemTemplateSelector x:Key="MessageItemTemplateSelector">
             <selectors:MessageItemTemplateSelector.MessageTemplate>
                 <DataTemplate DataType="{x:Type viewModels:MessageViewModel}">
@@ -128,70 +143,163 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            
-                            <Ellipse Width="30" Height="30" Fill="{DynamicResource NavButtonBackgroundBrush}" VerticalAlignment="Top" Margin="0,0,10,0" Visibility="{Binding IsCurrentUser, Converter={StaticResource InverseBooleanConverter}}"/>
-                            
+                            <Ellipse Width="30" Height="30" Fill="#33354E" VerticalAlignment="Top" Margin="0,0,10,0" Visibility="{Binding IsCurrentUser, Converter={StaticResource InverseBooleanConverter}}"/>
                             <StackPanel Grid.Column="1">
                                 <Border CornerRadius="12" Padding="12">
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsCurrentUser}" Value="True">
-                                                    <Setter Property="Background" Value="{DynamicResource MessageBubbleMeBrush}"/>
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource MessageBubbleMeBorderBrush}"/>
+                                                    <Setter Property="Background" Value="#25FFFFFF"/> 
+                                                    <Setter Property="BorderBrush" Value="#30FFFFFF"/>
                                                     <Setter Property="BorderThickness" Value="1"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsCurrentUser}" Value="False">
-                                                    <Setter Property="Background" Value="{DynamicResource MessageBubbleOtherBrush}"/>
+                                                    <Setter Property="Background" Value="#40000000"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Content}" Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" Opacity="{Binding IsDeleted, Converter={StaticResource BooleanToOpacityConverter}}" Visibility="{Binding HasContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding Content}" Foreground="White" TextWrapping="Wrap" Opacity="{Binding IsDeleted, Converter={StaticResource BooleanToOpacityConverter}}" Visibility="{Binding HasContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                         
+                                        <!-- Attachments Section -->
                                         <ItemsControl ItemsSource="{Binding Attachments}" Margin="0,8,0,0" Visibility="{Binding HasAttachments, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Border Margin="0,0,0,5" Background="{DynamicResource InputBackgroundBrush}" CornerRadius="8" Padding="8" HorizontalAlignment="Left" MaxWidth="300">
+                                                    <Border Margin="0,0,0,5" Background="#20FFFFFF" CornerRadius="8" Padding="8" HorizontalAlignment="Left" MaxWidth="300">
                                                         <Grid>
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="Auto"/>
                                                             </Grid.RowDefinitions>
-                                                           
+                                                            
+                                                            <!-- Image Preview (for images) - Click to view -->
                                                             <Button Grid.Row="0" 
-                                                                    Command="{Binding DataContext.RequestPlayAudioCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                                                    CommandParameter="{Binding}"
-                                                                    Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand" 
+                                                                    Command="{Binding DataContext.ViewImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                                    CommandParameter="{Binding}" 
+                                                                    Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand"
                                                                     Visibility="{Binding IsImage, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                                                     Margin="0,0,0,5">
-                                                                <Border CornerRadius="8" MaxHeight="200" Background="#252545"> <Grid>
+                                                                <Border CornerRadius="8" MaxHeight="200" Background="#252545">
+                                                                    <Grid>
+                                                                        <!-- Actual Image -->
                                                                         <Image Source="{Binding ThumbnailImage}" Stretch="Uniform" MaxHeight="200" Visibility="{Binding HasThumbnail, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                                        <TextBlock Text="Loading..." Foreground="{DynamicResource TextTertiaryBrush}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="20" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}"/>
+                                                                        
+                                                                        <!-- Loading placeholder -->
+                                                                        <TextBlock Text="Loading..." Foreground="#CCCCCC" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="20" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}"/>
                                                                     </Grid>
                                                                 </Border>
                                                             </Button>
-
+                                                            
+                                                            <!-- File Info (always shown) -->
                                                             <Grid Grid.Row="1">
                                                                 <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto"/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                     <ColumnDefinition Width="*"/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                     <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
-                                                                <Border Grid.Column="0" Background="{DynamicResource NavButtonBackgroundBrush}" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0">
-                                                                    <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource IconBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                                </Border>
-                                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                                    <TextBlock Text="{Binding FileName}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" TextTrimming="CharacterEllipsis"/>
-                                                                    <TextBlock Text="{Binding FileSizeFormatted}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
-                                                                </StackPanel>
-                                                                <Button Grid.Column="2" Command="{Binding DataContext.DownloadAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand" ToolTip="Download">
-                                                                    <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                
+                                                                <!-- Play/Pause Button for Audio -->
+                                                                <Button Grid.Column="0" 
+                                                                        Command="{Binding DataContext.PlayPauseAudioCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                                        CommandParameter="{Binding}" 
+                                                                        Width="36" Height="36" Margin="0,0,8,0"
+                                                                        Visibility="{Binding IsAudio, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                        ToolTip="Play/Pause">
+                                                                    <Button.Style>
+                                                                        <Style TargetType="Button" BasedOn="{StaticResource CircularIconButtonStyle}">
+                                                                            <Setter Property="Background" Value="#33354E"/>
+                                                                            <Setter Property="Width" Value="36"/>
+                                                                            <Setter Property="Height" Value="36"/>
+                                                                            <Setter Property="Template">
+                                                                                <Setter.Value>
+                                                                                    <ControlTemplate TargetType="Button">
+                                                                                        <Border Background="{TemplateBinding Background}" CornerRadius="18" Width="36" Height="36">
+                                                                                            <Border.Effect>
+                                                                                                <DropShadowEffect Color="#000000" Direction="315" ShadowDepth="2" BlurRadius="4" Opacity="0.2"/>
+                                                                                            </Border.Effect>
+                                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                                        </Border>
+                                                                                    </ControlTemplate>
+                                                                                </Setter.Value>
+                                                                            </Setter>
+                                                                            <Style.Triggers>
+                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                    <Setter Property="Background" Value="#4E517A"/>
+                                                                                </Trigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                                        <TextBlock.Style>
+                                                                            <Style TargetType="TextBlock">
+                                                                                <Setter Property="Text" Value="&#xE768;"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                                        <Setter Property="Text" Value="&#xE769;"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </TextBlock.Style>
+                                                                    </TextBlock>
                                                                 </Button>
-                                                                <Button Grid.Column="3" Command="{Binding DataContext.OpenAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand" Visibility="{Binding IsImage, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Open">
-                                                                    <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                
+                                                                <Border Grid.Column="1" Background="#33354E" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0">
+                                                                    <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                </Border>
+                                                                
+                                                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                                    <TextBlock Text="{Binding FileName}" Foreground="White" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                                                                    <TextBlock Text="{Binding FileSizeFormatted}" Foreground="#CCCCCC" FontSize="10"/>
+                                                                </StackPanel>
+                                                                
+                                                                <!-- Download Button -->
+                                                                <Button Grid.Column="3" 
+                                                                        Command="{Binding DataContext.DownloadAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                                        CommandParameter="{Binding}" 
+                                                                        Background="Transparent" BorderThickness="0" 
+                                                                        Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand"
+                                                                        ToolTip="Download">
+                                                                    <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CCCCCC" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                </Button>
+                                                                
+                                                                <!-- Preview Button for Code Files -->
+                                                                <Button Grid.Column="4" 
+                                                                        Command="{Binding DataContext.PreviewCodeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                                        CommandParameter="{Binding}" 
+                                                                        Background="Transparent" BorderThickness="0" 
+                                                                        Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand"
+                                                                        ToolTip="Preview Code"
+                                                                        Visibility="{Binding IsCodeFile, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                    <TextBlock Text="&#xE890;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#6495ED" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                </Button>
+                                                                
+                                                                <!-- Open/View Button for non-images and non-audio -->
+                                                                <Button Grid.Column="5" 
+                                                                        Command="{Binding DataContext.OpenAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                                        CommandParameter="{Binding}" 
+                                                                        Background="Transparent" BorderThickness="0" 
+                                                                        Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand"
+                                                                        ToolTip="Open">
+                                                                    <Button.Style>
+                                                                        <Style TargetType="Button">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <MultiDataTrigger>
+                                                                                    <MultiDataTrigger.Conditions>
+                                                                                        <Condition Binding="{Binding IsImage}" Value="False"/>
+                                                                                        <Condition Binding="{Binding IsAudio}" Value="False"/>
+                                                                                    </MultiDataTrigger.Conditions>
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </MultiDataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                    <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CCCCCC" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
                                                             </Grid>
                                                         </Grid>
@@ -199,17 +307,16 @@
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
-                                       
+                                        
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
-                                            <TextBlock Text="Edited" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10" Margin="0,0,5,0" FontStyle="Italic" Visibility="{Binding IsEdited, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                            <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:HH:mm}'}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                                            <TextBlock Text="Edited" Foreground="#90FFFFFF" FontSize="10" Margin="0,0,5,0" FontStyle="Italic" Visibility="{Binding IsEdited, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:HH:mm}'}" Foreground="#90FFFFFF" FontSize="10"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </Border>
-                                
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,0" Visibility="{Binding IsCurrentUser, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Button Content="Edit" Command="{Binding DataContext.EditMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource GlassActionButtonStyle}" Width="Auto" Height="20" FontSize="10" Padding="5,0" Margin="0,0,5,0" Visibility="{Binding IsDeleted, Converter={StaticResource InverseBooleanConverter}}"/>
-                                    <Button Content="Del" Command="{Binding DataContext.DeleteMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource GlassActionButtonStyle}" Background="#40FF0000" Width="Auto" Height="20" FontSize="10" Padding="5,0" Visibility="{Binding IsDeleted, Converter={StaticResource InverseBooleanConverter}}"/>
+                                     <Button Content="Edit" Command="{Binding DataContext.EditMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource GlassActionButtonStyle}" Width="Auto" Height="20" FontSize="10" Padding="5,0" Margin="0,0,5,0" Visibility="{Binding IsDeleted, Converter={StaticResource InverseBooleanConverter}}"/>
+                                     <Button Content="Del" Command="{Binding DataContext.DeleteMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource GlassActionButtonStyle}" Background="#40FF0000" Width="Auto" Height="20" FontSize="10" Padding="5,0" Visibility="{Binding IsDeleted, Converter={StaticResource InverseBooleanConverter}}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -226,9 +333,14 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Height="1" Background="{DynamicResource SeparatorBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1" Text="{Binding DisplayText}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" FontWeight="SemiBold" Padding="8,4"/>
-                            <Border Grid.Column="2" Height="1" Background="{DynamicResource SeparatorBrush}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            <Border Grid.Column="0" Height="1" Background="#30FFFFFF" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Column="1" 
+                                       Text="{Binding DisplayText}" 
+                                       Foreground="#90FFFFFF" 
+                                       FontSize="11" 
+                                       FontWeight="SemiBold"
+                                       Padding="8,4"/>
+                            <Border Grid.Column="2" Height="1" Background="#30FFFFFF" VerticalAlignment="Center" Margin="10,0,0,0"/>
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -239,10 +351,19 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="{DynamicResource AppBackgroundImageSource}" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="bg_uchat.png" Stretch="UniformToFill"/>
         </Grid.Background>
         
         <Border Background="#99000000"/>
+
+        <!-- Hidden MediaElement for audio playback -->
+        <MediaElement x:Name="AudioPlayer" 
+                      LoadedBehavior="Manual" 
+                      UnloadedBehavior="Stop"
+                      Visibility="Collapsed"
+                      MediaOpened="AudioPlayer_MediaOpened"
+                      MediaEnded="AudioPlayer_MediaEnded"
+                      MediaFailed="AudioPlayer_MediaFailed"/>
 
         <Grid x:Name="MainContentGrid">
             <Grid.ColumnDefinitions>
@@ -253,19 +374,24 @@
 
             <Grid Grid.Column="0" Margin="10" Background="Transparent">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>    <RowDefinition Height="Auto"/> </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="0,0,0,10">
                     <Border CornerRadius="18" Background="#18FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}"/>
-                    <ListBox Margin="0,10,0,10" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Center">
-                        <ListBox.ItemTemplate>
+
+                    <ListBox Margin="0,10,0,10"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                             HorizontalAlignment="Center">
+                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Content="" Style="{StaticResource RoundNavButtonStyle}"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
+                        
                         <ListBox.Items>
                             <sys:String>1</sys:String>
                             <sys:String>2</sys:String>
@@ -274,34 +400,33 @@
                     </ListBox>
                 </Grid>
 
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="1" Margin="0,0,0,0">
                     <Border CornerRadius="25" Background="#18FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}" CornerRadius="25"/>
+
                     <StackPanel VerticalAlignment="Center" Margin="0,15,0,15" HorizontalAlignment="Center">
-                        <Button Command="{Binding DataContext.NavigateToGeneratorCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource RoundNavButtonStyle}" Background="#5B4B6F" ToolTip="Gallery">
+                        
+                        <Button Command="{Binding NavigateToGeneratorCommand}" Style="{StaticResource RoundNavButtonStyle}" Background="#5B4B6F" ToolTip="Gallery">
                             <TextBlock Text="&#xE91B;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
                         
-                        <Button Command="{Binding DataContext.ToggleThemeCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource RoundNavButtonStyle}" Background="#8C7B30" ToolTip="Theme">
-                            <TextBlock Text="{Binding DataContext.ThemeIcon, RelativeSource={RelativeSource AncestorType=Window}}" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Button Command="{Binding ToggleThemeCommand}" Style="{StaticResource RoundNavButtonStyle}" Background="#8C7B30" ToolTip="Theme">
+                            <TextBlock Text="&#xE708;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
                         
-                        <Button Command="{Binding DataContext.NavigateToSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource RoundNavButtonStyle}" Background="#4E5165" ToolTip="Settings">
+                        <Button Style="{StaticResource RoundNavButtonStyle}" Background="#4E5165" ToolTip="Settings">
                             <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
+
                     </StackPanel>
                 </Grid>
             </Grid>
-            
             <Grid Grid.Column="1" Margin="0,10,0,10">
                 <Border CornerRadius="18" Background="#18FFFFFF"/>
                 <Border Style="{StaticResource GlassPanelBorderStyle}">
                     <Grid Margin="10">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/> 
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/> <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Margin="5,0,5,10">
@@ -310,36 +435,28 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Chats" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="0" Text="Chats" Foreground="White" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+
                             <Button Grid.Column="1" Command="{Binding CreateChatCommand}" Style="{StaticResource GlassActionButtonStyle}" ToolTip="Add new chat" Margin="0,0,5,0">
                                 <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
                             </Button>
+
                             <Button Grid.Column="2" Command="{Binding RefreshConversationsCommand}" Style="{StaticResource GlassActionButtonStyle}" ToolTip="Refresh">
                                 <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
                             </Button>
                         </Grid>
 
-                        <Border Grid.Row="1" Background="{DynamicResource SearchInputBackgroundBrush}" CornerRadius="10" Height="30" Margin="0,0,0,10">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                <TextBox Grid.Column="1" Text="{Binding ChatSearchText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextPrimaryBrush}" CaretBrush="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="5,0,5,0" Tag="Search chats..."/>
-                            </Grid>
-                        </Border>
+                        <TextBlock Grid.Row="1" Text="Loading conversations..." Foreground="#CCCCCC" HorizontalAlignment="Center" Margin="0,10" Visibility="{Binding IsLoadingConversations, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-                        <TextBlock Grid.Row="2" Text="Loading conversations..." Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" Margin="0,10" Visibility="{Binding IsLoadingConversations, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-
-                        <ListBox Grid.Row="3" ItemsSource="{Binding ConversationsView}" SelectedItem="{Binding SelectedConversation}" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Visibility="{Binding IsLoadingConversations, Converter={StaticResource InverseBooleanConverter}}">
+                        <ListBox Grid.Row="2" ItemsSource="{Binding Conversations}" SelectedItem="{Binding SelectedConversation}" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Visibility="{Binding IsLoadingConversations, Converter={StaticResource InverseBooleanConverter}}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Margin="10,5">
                                         <Grid Margin="0,0,10,0">
-                                            <Ellipse Width="40" Height="40" Fill="{DynamicResource NavButtonBackgroundBrush}"/>
-                                            <TextBlock Text="{Binding Name, Converter={StaticResource FirstCharacterConverter}}" Foreground="{DynamicResource IconBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
-                                            <Ellipse Width="10" Height="10" Fill="{DynamicResource AccentColorBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,-2,0"/>
+                                            <Ellipse Width="40" Height="40" Fill="#33354E"/> 
+                                            <TextBlock Text="{Binding Name, Converter={StaticResource FirstCharacterConverter}}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                            <Ellipse Width="10" Height="10" Fill="#FF00CC6A" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,-2,0"/>
                                         </Grid>
                                         <StackPanel VerticalAlignment="Center" Width="180">
                                             <Grid>
@@ -347,15 +464,15 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding LastMessageTime}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Name}" Foreground="White" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding LastMessageTime}" Foreground="#90FFFFFF" FontSize="10" VerticalAlignment="Center"/>
                                             </Grid>
                                             <Grid Margin="0,2,0,0">
-                                                <TextBlock Text="{Binding LastMessagePreview}" Foreground="{DynamicResource TextTertiaryBrush}" FontSize="11" TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Text="Typing..." Foreground="#FFD700" FontSize="11" FontStyle="Italic" Visibility="{Binding IsTyping, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                 <TextBlock Text="{Binding LastMessagePreview}" Foreground="#CCCCCC" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                                 <TextBlock Text="Typing..." Foreground="#FFD700" FontSize="11" FontStyle="Italic" Visibility="{Binding IsTyping, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                             </Grid>
                                         </StackPanel>
-                                        <Border Background="{DynamicResource AccentColorBrush}" CornerRadius="8" Height="16" MinWidth="16" Padding="4,0" Margin="5,0,0,0" VerticalAlignment="Center" Visibility="{Binding UnreadCount, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Border Background="#FF0078D7" CornerRadius="8" Height="16" MinWidth="16" Padding="4,0" Margin="5,0,0,0" VerticalAlignment="Center" Visibility="{Binding UnreadCount, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <TextBlock Text="{Binding UnreadCount}" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                     </StackPanel>
@@ -373,47 +490,16 @@
                 <Border Style="{StaticResource GlassPanelBorderStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/> <RowDefinition Height="*"/> <RowDefinition Height="Auto"/> 
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Margin="20,15">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="220"/> 
                             </Grid.ColumnDefinitions>
-                            <Ellipse Width="10" Height="10" Fill="{DynamicResource AccentColorBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorColorBrush}" Background="#20000000" Padding="5" Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}"/>
-                            
-                            <Border Grid.Column="3" Background="{DynamicResource SearchInputBackgroundBrush}" CornerRadius="12" Height="32">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/> 
-                                        <ColumnDefinition Width="*"/>    
-                                        <ColumnDefinition Width="Auto"/> 
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    
-                                    <TextBox Grid.Column="1" Text="{Binding MessageSearchText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextPrimaryBrush}" CaretBrush="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="5,0,0,0" ToolTip="Search messages...">
-                                        <TextBox.InputBindings>
-                                            <KeyBinding Key="Enter" Command="{Binding SearchMessagesInChatCommand}"/>
-                                        </TextBox.InputBindings>
-                                    </TextBox>
-                                    
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,5,0">
-                                        <Button Command="{Binding ClearMessageSearchCommand}" Style="{StaticResource CircularIconButtonStyle}" Width="20" Height="20" ToolTip="Clear search">
-                                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="{DynamicResource TextTertiaryBrush}"/>
-                                        </Button>
-                                        <Button Command="{Binding SearchMessagesInChatCommand}" Style="{StaticResource CircularIconButtonStyle}" Width="24" Height="24" ToolTip="Search">
-                                            <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource IconBrush}"/>
-                                        </Button>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
+                            <Ellipse Width="10" Height="10" Fill="#FF00CC6A" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Background="#20000000" Padding="5" Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}"/>
                         </Grid>
 
                         <Grid Grid.Row="1">
@@ -427,19 +513,28 @@
                                 </ItemsControl>
                             </ScrollViewer>
                             
-                            <Button x:Name="ScrollToBottomButton" Click="ScrollToBottomButton_Click" Style="{StaticResource RoundNavButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,20,20" Visibility="Collapsed" ToolTip="Scroll to bottom">
-                                <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5"/>
+                            <!-- Scroll to bottom button -->
+                            <Button x:Name="ScrollToBottomButton" 
+                                    Click="ScrollToBottomButton_Click"
+                                    Style="{StaticResource RoundNavButtonStyle}" 
+                                    Background="#33354E"
+                                    HorizontalAlignment="Right" 
+                                    VerticalAlignment="Bottom" 
+                                    Margin="0,0,20,20"
+                                    Visibility="Collapsed"
+                                    ToolTip="Scroll to bottom">
+                                <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                </TextBlock>
                             </Button>
                         </Grid>
 
-                        <Border Grid.Row="2" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0" MinHeight="60">
+                        <Border Grid.Row="2" BorderBrush="#30FFFFFF" BorderThickness="0,1,0,0" MinHeight="60">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                
                                 <Border Grid.Row="0" Background="#40FFA500" Padding="10,5" Visibility="{Binding MessageBeingEdited, Converter={StaticResource NullToVisibilityConverter}}">
                                     <Grid>
                                         <TextBlock Text="Editing message..." Foreground="White" FontStyle="Italic"/>
@@ -447,7 +542,8 @@
                                     </Grid>
                                 </Border>
                                 
-                                <Border Grid.Row="1" Background="{DynamicResource GlassPanelBackgroundBrush}" Padding="10,5" Visibility="{Binding PendingAttachments.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                <!-- Pending Attachments Section -->
+                                <Border Grid.Row="1" Background="#252545" Padding="10,5" Visibility="{Binding PendingAttachments.Count, Converter={StaticResource CountToVisibilityConverter}}">
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                                         <ItemsControl ItemsSource="{Binding PendingAttachments}">
                                             <ItemsControl.ItemsPanel>
@@ -457,23 +553,32 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Border Background="{DynamicResource NavButtonBackgroundBrush}" CornerRadius="8" Padding="5" Margin="0,0,8,0" Width="120">
+                                                    <Border Background="#33354E" CornerRadius="8" Padding="5" Margin="0,0,8,0" Width="120">
                                                         <Grid>
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="Auto"/>
                                                             </Grid.RowDefinitions>
-                                                            <Grid Grid.Row="0" Height="80" Background="{DynamicResource InputBackgroundBrush}" Margin="0,0,0,5">
+                                                            
+                                                            <!-- Image Preview or Icon -->
+                                                            <Grid Grid.Row="0" Height="80" Background="#252545" Margin="0,0,0,5">
+                                                                <!-- Image Thumbnail -->
                                                                 <Image Source="{Binding ThumbnailImage}" Stretch="UniformToFill" Visibility="{Binding HasThumbnail, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                                <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="32" Foreground="{DynamicResource IconBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}"/>
+                                                                
+                                                                <!-- File Icon (for non-images) -->
+                                                                <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="32" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}"/>
+                                                                
+                                                                <!-- Remove Button -->
                                                                 <Button Command="{Binding DataContext.RemoveAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Width="20" Height="20" Background="#CC000000" BorderThickness="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2" ToolTip="Remove">
                                                                     <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="White"/>
                                                                 </Button>
                                                             </Grid>
+                                                            
                                                             <StackPanel Grid.Row="1">
-                                                                <TextBlock Text="{Binding FileName}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10" TextTrimming="CharacterEllipsis" ToolTip="{Binding FileName}"/>
-                                                                <TextBlock Text="{Binding FileSizeFormatted}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="9"/>
-                                                                <CheckBox Content="Compress" IsChecked="{Binding IsCompressed, Mode=TwoWay}" Visibility="{Binding CanCompress, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="{DynamicResource TextTertiaryBrush}" FontSize="9" Margin="0,2,0,0"/>
+                                                                <TextBlock Text="{Binding FileName}" Foreground="White" FontSize="10" TextTrimming="CharacterEllipsis" ToolTip="{Binding FileName}"/>
+                                                                <TextBlock Text="{Binding FileSizeFormatted}" Foreground="#CCCCCC" FontSize="9"/>
+                                                                <!-- Added CheckBox for compression toggle -->
+                                                                <CheckBox Content="Compress" IsChecked="{Binding IsCompressed, Mode=TwoWay}" Visibility="{Binding CanCompress, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="#CCCCCC" FontSize="9" Margin="0,2,0,0"/>
                                                                 <TextBlock Text="Uploading..." Foreground="#FFD700" FontSize="9" FontStyle="Italic" Visibility="{Binding IsUploading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                                             </StackPanel>
                                                         </Grid>
@@ -483,35 +588,33 @@
                                         </ItemsControl>
                                     </ScrollViewer>
                                 </Border>
-                                
                                 <Grid Grid.Row="2" VerticalAlignment="Center" Margin="10,12" Visibility="{Binding MessageBeingEdited, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Invert}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Background="{DynamicResource InputBackgroundBrush}" CornerRadius="20">
+                                    <Border Grid.Column="0" Background="#25FFFFFF" CornerRadius="20">
                                         <Grid Margin="8,5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <Button Grid.Column="0" Command="{Binding AttachFileCommand}" Style="{StaticResource CircularIconButtonStyle}" ToolTip="Attach File">
-                                                <TextBlock Text="&#xE723;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource IconBrush}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="&#xE723;" FontFamily="Segoe MDL2 Assets" Foreground="White" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                             </Button>
-                                            <TextBox Grid.Column="1" Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" 
-                                                     BorderThickness="0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" CaretBrush="{DynamicResource TextPrimaryBrush}" Padding="5,0" IsEnabled="{Binding SelectedConversation, Converter={StaticResource NullToBooleanConverter}}">
+                                            <TextBox Grid.Column="1" Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="White" VerticalAlignment="Center" CaretBrush="White" Padding="5,0" IsEnabled="{Binding SelectedConversation, Converter={StaticResource NullToBooleanConverter}}">
                                                 <TextBox.InputBindings>
                                                     <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
                                                 </TextBox.InputBindings>
                                             </TextBox>
                                         </Grid>
                                     </Border>
-                                    <Button Grid.Column="1" Command="{Binding SendMessageCommand}" Background="{DynamicResource InputBackgroundBrush}" Width="40" Height="40" Margin="5,0" Cursor="Hand">
+                                    <Button Grid.Column="1" Command="{Binding SendMessageCommand}" Background="#25FFFFFF" Width="40" Height="40" Margin="5,0" Cursor="Hand">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}" CornerRadius="20">
-                                                    <TextBlock Text="&#xE724;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource IconBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <TextBlock Text="&#xE724;" FontFamily="Segoe MDL2 Assets" Foreground="White" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center">
                                                         <TextBlock.RenderTransform>
                                                             <RotateTransform Angle="45" CenterX="8" CenterY="8"/>
                                                         </TextBlock.RenderTransform>
@@ -520,22 +623,27 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
-                                    <Border Grid.Column="2" Background="{DynamicResource InputBackgroundBrush}" Width="40" Height="40" CornerRadius="20" Margin="5,0" Cursor="Hand">
-                                        <TextBlock Text="&#xE720;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource IconBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    </Border>
+                                    <Button Grid.Column="2" Background="#25FFFFFF" Width="40" Height="40" Margin="5,0" Cursor="Hand" ToolTip="Microphone">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="20">
+                                                    <TextBlock Text="&#xE720;" FontFamily="Segoe MDL2 Assets" Foreground="White" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
                                 </Grid>
-                                
-                                <Grid Grid.Row="2" VerticalAlignment="Center" Margin="10,12" Visibility="{Binding MessageBeingEdited, Converter={StaticResource NullToVisibilityConverter}}">
-                                    <Border Background="{DynamicResource InputBackgroundBrush}" CornerRadius="20">
-                                        <Grid Margin="8,5">
-                                            <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" CaretBrush="{DynamicResource TextPrimaryBrush}">
-                                                <TextBox.InputBindings>
-                                                    <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
-                                                </TextBox.InputBindings>
-                                            </TextBox>
-                                        </Grid>
-                                    </Border>
-                                </Grid>
+                                 <Grid Grid.Row="2" VerticalAlignment="Center" Margin="10,12" Visibility="{Binding MessageBeingEdited, Converter={StaticResource NullToVisibilityConverter}}">
+                                     <Border Background="#25FFFFFF" CornerRadius="20">
+                                         <Grid Margin="8,5">
+                                              <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="White" VerticalAlignment="Center" CaretBrush="White">
+                                                  <TextBox.InputBindings>
+                                                      <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
+                                                  </TextBox.InputBindings>
+                                              </TextBox>
+                                         </Grid>
+                                     </Border>
+                                 </Grid>
                             </Grid>
                         </Border>
                     </Grid>

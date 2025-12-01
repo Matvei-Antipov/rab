@@ -11,48 +11,46 @@ namespace Uchat.Client.Services
     public class NavigationService : INavigationService
     {
         private readonly IServiceProvider serviceProvider;
+        private readonly MainWindowViewModel mainWindowViewModel;
         private readonly Stack<ViewModelBase> navigationHistory = new Stack<ViewModelBase>();
-
-        // Храним текущую ViewModel здесь, внутри сервиса
-        private ViewModelBase? currentViewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService"/> class.
         /// </summary>
         /// <param name="serviceProvider">Service provider.</param>
-        public NavigationService(IServiceProvider serviceProvider)
+        /// <param name="mainWindowViewModel">Main window view model.</param>
+        public NavigationService(IServiceProvider serviceProvider, MainWindowViewModel mainWindowViewModel)
         {
             this.serviceProvider = serviceProvider;
+            this.mainWindowViewModel = mainWindowViewModel;
         }
 
         /// <inheritdoc/>
         public event EventHandler<ViewModelBase>? CurrentViewModelChanged;
 
         /// <inheritdoc/>
-        public ViewModelBase? CurrentViewModel => this.currentViewModel;
+        public ViewModelBase? CurrentViewModel => this.mainWindowViewModel.CurrentViewModel;
 
         /// <inheritdoc/>
         public void NavigateTo<TViewModel>()
             where TViewModel : ViewModelBase
         {
             // Call OnNavigatedFrom on the current view model
-            if (this.currentViewModel != null)
+            if (this.mainWindowViewModel.CurrentViewModel != null)
             {
-                this.currentViewModel.OnNavigatedFrom();
-                this.navigationHistory.Push(this.currentViewModel);
+                this.mainWindowViewModel.CurrentViewModel.OnNavigatedFrom();
+                this.navigationHistory.Push(this.mainWindowViewModel.CurrentViewModel);
             }
 
             // Create new view model
-            var newViewModel = this.serviceProvider.GetRequiredService<TViewModel>();
-
-            // Update internal state
-            this.currentViewModel = newViewModel;
+            var viewModel = this.serviceProvider.GetRequiredService<TViewModel>();
+            this.mainWindowViewModel.SetCurrentViewModel(viewModel);
 
             // Call OnNavigatedTo on the new view model
-            newViewModel.OnNavigatedTo();
+            viewModel.OnNavigatedTo();
 
-            // Notify subscribers (Main Window will listen to this)
-            this.CurrentViewModelChanged?.Invoke(this, newViewModel);
+            // Notify subscribers
+            this.CurrentViewModelChanged?.Invoke(this, viewModel);
         }
 
         /// <inheritdoc/>
@@ -61,15 +59,13 @@ namespace Uchat.Client.Services
             if (this.navigationHistory.Count > 0)
             {
                 // Call OnNavigatedFrom on the current view model
-                if (this.currentViewModel != null)
+                if (this.mainWindowViewModel.CurrentViewModel != null)
                 {
-                    this.currentViewModel.OnNavigatedFrom();
+                    this.mainWindowViewModel.CurrentViewModel.OnNavigatedFrom();
                 }
 
                 var previousViewModel = this.navigationHistory.Pop();
-
-                // Update internal state
-                this.currentViewModel = previousViewModel;
+                this.mainWindowViewModel.SetCurrentViewModel(previousViewModel);
 
                 // Call OnNavigatedTo on the restored view model
                 previousViewModel.OnNavigatedTo();
@@ -89,7 +85,6 @@ namespace Uchat.Client.Services
         public void ClearHistory()
         {
             this.navigationHistory.Clear();
-            this.currentViewModel = null;
         }
     }
 }
