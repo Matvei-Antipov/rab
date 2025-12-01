@@ -63,6 +63,8 @@ namespace Uchat.Client.Helpers
             { ".scss", "SCSS" },
             { ".sass", "Sass" },
             { ".less", "Less" },
+            { ".vue", "HTML" },
+            { ".svelte", "HTML" },
 
             // Data formats
             { ".json", "JSON" },
@@ -82,6 +84,10 @@ namespace Uchat.Client.Helpers
             { ".bat", "Batch" },
             { ".cmd", "Batch" },
             { ".ps1", "PowerShell" },
+
+            // XAML
+            { ".xaml", "XAML" },
+            { ".axaml", "XAML" },
 
             // Other
             { ".md", "Markdown" },
@@ -105,13 +111,26 @@ namespace Uchat.Client.Helpers
             { ".php", "PHP" },
             { ".html", "HTML" },
             { ".htm", "HTML" },
+            { ".vue", "HTML" },
+            { ".svelte", "HTML" },
             { ".xml", "XML" },
             { ".css", "CSS" },
+            { ".scss", "CSS" },
+            { ".sass", "CSS" },
+            { ".less", "CSS" },
             { ".json", "JavaScript" },
+            { ".yaml", "JavaScript" },
+            { ".yml", "JavaScript" },
             { ".sql", "SQL" },
             { ".py", "Python" },
             { ".vb", "VB" },
             { ".aspx", "ASP/XHTML" },
+            { ".xaml", "XML" },
+            { ".axaml", "XML" },
+            { ".sh", "JavaScript" },
+            { ".bat", "JavaScript" },
+            { ".ps1", "PowerShell" },
+            { ".md", "MarkDown" },
         };
 
         /// <summary>

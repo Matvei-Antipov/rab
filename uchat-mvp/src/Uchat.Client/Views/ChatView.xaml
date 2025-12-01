@@ -179,6 +179,7 @@
                                                                     <ColumnDefinition Width="*"/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                     <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <Border Grid.Column="0" Background="{DynamicResource NavButtonBackgroundBrush}" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0">
                                                                     <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource IconBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -187,10 +188,13 @@
                                                                     <TextBlock Text="{Binding FileName}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" TextTrimming="CharacterEllipsis"/>
                                                                     <TextBlock Text="{Binding FileSizeFormatted}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
                                                                 </StackPanel>
-                                                                <Button Grid.Column="2" Command="{Binding DataContext.DownloadAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand" ToolTip="Download">
+                                                                <Button Grid.Column="2" Command="{Binding DataContext.PreviewCodeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand" Visibility="{Binding IsCodeFile, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preview Code">
+                                                                    <TextBlock Text="&#xE7B3;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource CodePreviewBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                </Button>
+                                                                <Button Grid.Column="3" Command="{Binding DataContext.DownloadAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand" ToolTip="Download">
                                                                     <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
-                                                                <Button Grid.Column="3" Command="{Binding DataContext.OpenAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand" Visibility="{Binding IsImage, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Open">
+                                                                <Button Grid.Column="4" Command="{Binding DataContext.OpenAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Width="30" Height="30" Margin="5,0,0,0" Cursor="Hand" Visibility="{Binding IsImage, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Open">
                                                                     <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
                                                             </Grid>

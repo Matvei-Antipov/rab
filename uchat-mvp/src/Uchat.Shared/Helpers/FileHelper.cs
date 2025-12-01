@@ -88,6 +88,9 @@ namespace Uchat.Shared.Helpers
             { ".scala", AttachmentType.Code },
             { ".html", AttachmentType.Code },
             { ".css", AttachmentType.Code },
+            { ".scss", AttachmentType.Code },
+            { ".sass", AttachmentType.Code },
+            { ".less", AttachmentType.Code },
             { ".json", AttachmentType.Code },
             { ".xml", AttachmentType.Code },
             { ".yaml", AttachmentType.Code },
@@ -96,6 +99,10 @@ namespace Uchat.Shared.Helpers
             { ".sh", AttachmentType.Code },
             { ".bat", AttachmentType.Code },
             { ".ps1", AttachmentType.Code },
+            { ".xaml", AttachmentType.Code },
+            { ".vue", AttachmentType.Code },
+            { ".svelte", AttachmentType.Code },
+            { ".md", AttachmentType.Code },
         };
 
         /// <summary>

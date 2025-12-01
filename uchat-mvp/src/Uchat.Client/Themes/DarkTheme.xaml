@@ -33,4 +33,5 @@
 
     <SolidColorBrush x:Key="AccentColorBrush" Color="#FF00CC6A"/>
     <SolidColorBrush x:Key="ErrorColorBrush" Color="#FF6B6B"/>
+    <SolidColorBrush x:Key="CodePreviewBrush" Color="#007ACC"/>
 </ResourceDictionary>
