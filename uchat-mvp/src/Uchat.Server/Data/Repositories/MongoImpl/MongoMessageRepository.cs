@@ -5,6 +5,7 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using MongoDB.Bson;
     using MongoDB.Driver;
     using Uchat.Server.Services.Abstractions;
     using Uchat.Shared.Enums;
@@ -39,7 +40,11 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
         /// <inheritdoc/>
         public async Task<IEnumerable<SharedMessage>> GetByChatIdAsync(string chatId, int limit = 50, int offset = 0, CancellationToken cancellationToken = default)
         {
-            var filter = Builders<DataMessage>.Filter.Eq(x => x.ChatId, chatId);
+            var builder = Builders<DataMessage>.Filter;
+            var filter = builder.And(
+                builder.Eq(x => x.ChatId, chatId),
+                builder.Ne(x => x.IsDeleted, true));
+
             var sort = Builders<DataMessage>.Sort.Descending(x => x.CreatedAt);
 
             var dataMessages = await this.collection.Find(filter)
@@ -48,9 +53,6 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
                                                   .Limit(limit)
                                                   .ToListAsync(cancellationToken);
 
-            // Note: Attachments are not populated here as they are in a separate collection/repository.
-            // The service layer might need to fetch them if needed, or we could aggregate.
-            // For now, returning messages without attachments populated.
             return dataMessages.Select(MapToShared).Where(m => m != null).Cast<SharedMessage>();
         }
 
@@ -73,24 +75,44 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
         /// <inheritdoc/>
         public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
         {
-            // Soft delete logic if needed, or hard delete. Interface says "Soft deletes".
-            // But DataMessage doesn't have IsDeleted field in my initial design?
-            // Wait, SharedMessage has IsDeleted. DataMessage should probably have it too.
-            // I missed IsDeleted in DataMessage. I'll add it implicitly or update the model later.
-            // For now, I'll assume hard delete or just update the content/flag if I add it.
-            // Let's check DataMessage again. It has IsRead but not IsDeleted.
-            // I'll implement hard delete for now as the user asked to "move tables",
-            // but if the interface implies soft delete, I should probably update the Data model.
-            // However, for MVP migration, I'll just delete the document.
+            // Soft delete implementation
             var filter = Builders<DataMessage>.Filter.Eq(x => x.Id, id);
-            await this.collection.DeleteOneAsync(filter, cancellationToken);
+            var update = Builders<DataMessage>.Update.Set(x => x.IsDeleted, true);
+            await this.collection.UpdateOneAsync(filter, update, null, cancellationToken);
         }
 
         /// <inheritdoc/>
         public async Task<int> GetMessageCountAsync(string chatId, CancellationToken cancellationToken = default)
         {
-            var filter = Builders<DataMessage>.Filter.Eq(x => x.ChatId, chatId);
+            var filter = Builders<DataMessage>.Filter.And(
+                Builders<DataMessage>.Filter.Eq(x => x.ChatId, chatId),
+                Builders<DataMessage>.Filter.Ne(x => x.IsDeleted, true));
+
             return (int)await this.collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<SharedMessage>> SearchAsync(string chatId, string query, CancellationToken cancellationToken = default)
+        {
+            var builder = Builders<DataMessage>.Filter;
+
+            var chatFilter = builder.Eq(x => x.ChatId, chatId);
+
+            // Handle legacy documents where IsDeleted might be missing (treat missing as false)
+            var deletedFilter = builder.Or(
+                builder.Eq(x => x.IsDeleted, false),
+                builder.Exists(x => x.IsDeleted, false));
+
+            // Regex for case-insensitive content search
+            var contentFilter = builder.Regex(x => x.Content, new BsonRegularExpression(query, "i"));
+
+            var filter = builder.And(chatFilter, deletedFilter, contentFilter);
+
+            var dataMessages = await this.collection.Find(filter)
+                                                  .SortByDescending(x => x.CreatedAt)
+                                                  .ToListAsync(cancellationToken);
+
+            return dataMessages.Select(MapToShared).Where(m => m != null).Cast<SharedMessage>();
         }
 
         private static SharedMessage? MapToShared(DataMessage? dataMessage)
@@ -100,7 +122,6 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
                 return null;
             }
 
-            // Map MongoDB status (0-3) to MessageStatus enum
             MessageStatus status = dataMessage.Status switch
             {
                 0 => MessageStatus.Sent,
@@ -127,7 +148,6 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
 
         private static DataMessage MapToData(SharedMessage sharedMessage)
         {
-            // Map MessageStatus enum to MongoDB status (0-3)
             int status = sharedMessage.Status switch
             {
                 MessageStatus.Sent => 0,

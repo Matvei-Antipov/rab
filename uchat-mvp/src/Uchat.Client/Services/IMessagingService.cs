@@ -119,6 +119,15 @@ namespace Uchat.Client.Services
         Task<List<MessageDto>> GetMessageHistoryAsync(string chatId, int limit = 50, int offset = 0, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Searches for messages within a specific chat.
+        /// </summary>
+        /// <param name="chatId">The chat ID.</param>
+        /// <param name="query">The search query.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of matching messages.</returns>
+        Task<List<MessageDto>> SearchMessagesAsync(string chatId, string query, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Retrieves the list of chats for the current user.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>

@@ -5,6 +5,7 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using MongoDB.Bson;
     using MongoDB.Driver;
     using Uchat.Server.Services.Abstractions;
     using Uchat.Shared.Enums;
@@ -88,12 +89,28 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
         /// <inheritdoc/>
         public async Task<bool> ChatNameExistsForUserAsync(string name, string userId, CancellationToken cancellationToken = default)
         {
-            // This logic might need adjustment based on requirements.
-            // Assuming checking if a user is part of a chat with this name.
             var filter = Builders<DataChat>.Filter.And(
                 Builders<DataChat>.Filter.Eq(x => x.Name, name),
                 Builders<DataChat>.Filter.AnyEq(x => x.Participants, userId));
             return await this.collection.Find(filter).AnyAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<SharedChat>> SearchChatsAsync(string userId, string query, CancellationToken cancellationToken = default)
+        {
+            var builder = Builders<DataChat>.Filter;
+
+            // User must be a participant
+            var userFilter = builder.AnyEq(x => x.Participants, userId);
+
+            // Chat name must match query (case-insensitive)
+            var regex = new BsonRegularExpression(query, "i");
+            var nameFilter = builder.Regex(x => x.Name, regex);
+
+            var filter = builder.And(userFilter, nameFilter);
+
+            var dataChats = await this.collection.Find(filter).ToListAsync(cancellationToken);
+            return dataChats.Select(MapToShared).Where(c => c != null).Cast<SharedChat>();
         }
 
         private static SharedChat? MapToShared(DataChat? dataChat)

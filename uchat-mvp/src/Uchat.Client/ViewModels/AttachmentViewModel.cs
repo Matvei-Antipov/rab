@@ -154,11 +154,6 @@ namespace Uchat.Client.ViewModels
         public bool IsAudio => this.attachmentType == AttachmentType.Audio;
 
         /// <summary>
-        /// Gets a value indicating whether this is a code file attachment.
-        /// </summary>
-        public bool IsCodeFile => this.attachmentType == AttachmentType.Code;
-
-        /// <summary>
         /// Gets or sets the thumbnail image for preview.
         /// </summary>
         public BitmapImage? ThumbnailImage

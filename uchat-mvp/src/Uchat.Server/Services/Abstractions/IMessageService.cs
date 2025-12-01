@@ -63,5 +63,14 @@ namespace Uchat.Server.Services.Abstractions
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task MarkAsReadAsync(string messageId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Searches for messages matching a query within a chat.
+        /// </summary>
+        /// <param name="chatId">The chat ID.</param>
+        /// <param name="query">The search query.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A collection of matching message DTOs.</returns>
+        Task<IEnumerable<MessageDto>> SearchMessagesAsync(string chatId, string query, CancellationToken cancellationToken = default);
     }
 }

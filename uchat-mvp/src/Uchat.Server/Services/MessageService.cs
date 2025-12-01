@@ -15,7 +15,7 @@ namespace Uchat.Server.Services
     using Uchat.Shared.Models;
 
     /// <summary>
-    /// Service for message operations with Oracle persistence and Redis caching.
+    /// Service for message operations with persistence and caching.
     /// </summary>
     public class MessageService : IMessageService
     {
@@ -182,11 +182,6 @@ namespace Uchat.Server.Services
 
                 return chatId;
             }
-            catch (Oracle.ManagedDataAccess.Client.OracleException oraEx)
-            {
-                this.logger.Error(oraEx, "Oracle error deleting message {MessageId}: ORA-{ErrorNumber} - {ErrorMessage}", messageId, oraEx.Number, oraEx.Message);
-                throw new DomainException($"Database error while deleting message: {oraEx.Message}", oraEx);
-            }
             catch (Exception ex)
             {
                 this.logger.Error(ex, "Unexpected error deleting message {MessageId} from chat {ChatId}", messageId, chatId);
@@ -209,13 +204,12 @@ namespace Uchat.Server.Services
             this.logger.Information("Cache MISS for chat {ChatId}: loading from database with limit={Limit}, offset={Offset}", chatId, limit, offset);
 
             var messagesEnumerable = await this.messageRepository.GetByChatIdAsync(chatId, limit, offset, cancellationToken);
-            var messages = messagesEnumerable.ToList(); // Materialize to list BEFORE loading attachments
+            var messages = messagesEnumerable.ToList();
 
             // Load attachments for each message
             foreach (var message in messages)
             {
                 var attachments = await this.attachmentRepository.GetByMessageIdAsync(message.Id, cancellationToken);
-                this.logger.Debug("Loaded {Count} attachments for message {MessageId}", attachments?.Count ?? 0, message.Id);
                 message.Attachments = attachments ?? new List<MessageAttachment>();
             }
 
@@ -223,25 +217,35 @@ namespace Uchat.Server.Services
 
             this.logger.Information("Loaded {Count} messages from database for chat {ChatId}", dtos.Count, chatId);
 
-            // Log attachment info for debugging
-            foreach (var dto in dtos)
-            {
-                this.logger.Debug("Message {MessageId} has {AttachmentCount} attachments", dto.Id, dto.Attachments?.Count ?? 0);
-                if (dto.Attachments != null && dto.Attachments.Count > 0)
-                {
-                    foreach (var att in dto.Attachments)
-                    {
-                        this.logger.Debug(
-                            "  - Attachment {AttachmentId}: ThumbnailUrl={ThumbnailUrl}, DownloadUrl={DownloadUrl}",
-                            att.Id,
-                            att.ThumbnailUrl,
-                            att.DownloadUrl);
-                    }
-                }
-            }
-
             await this.cacheService.SetAsync(cacheKey, dtos, TimeSpan.FromMinutes(5), cancellationToken);
             this.logger.Debug("Cached {Count} messages for chat {ChatId}", dtos.Count, chatId);
+
+            return dtos;
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<MessageDto>> SearchMessagesAsync(string chatId, string query, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return new List<MessageDto>();
+            }
+
+            this.logger.Information("Searching messages in chat {ChatId} with query '{Query}'", chatId, query);
+
+            var messagesEnumerable = await this.messageRepository.SearchAsync(chatId, query, cancellationToken);
+            var messages = messagesEnumerable.ToList();
+
+            // Load attachments for found messages
+            foreach (var message in messages)
+            {
+                var attachments = await this.attachmentRepository.GetByMessageIdAsync(message.Id, cancellationToken);
+                message.Attachments = attachments ?? new List<MessageAttachment>();
+            }
+
+            var dtos = messages.Select(this.MapToDto).ToList();
+
+            this.logger.Information("Found {Count} messages matching query '{Query}' in chat {ChatId}", dtos.Count, query, chatId);
 
             return dtos;
         }
@@ -304,10 +308,6 @@ namespace Uchat.Server.Services
 
         private async Task InvalidateChatMessagesCache(string chatId, CancellationToken cancellationToken = default)
         {
-            // Invalidate all pages for this chat
-            // Note: This assumes the cache service supports pattern matching or we accept that we might miss some keys.
-            // Ideally, we should use a tag or a set to track all keys for a chat.
-            // For now, we'll try to remove the most common pages.
             var cacheKeyBase = $"chat:messages:{chatId}";
             await this.cacheService.RemoveAsync($"{cacheKeyBase}:50:0", cancellationToken);
             await this.cacheService.RemoveAsync($"{cacheKeyBase}:1:0", cancellationToken);

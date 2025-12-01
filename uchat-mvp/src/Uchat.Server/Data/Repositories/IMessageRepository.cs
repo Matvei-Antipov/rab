@@ -59,5 +59,14 @@ namespace Uchat.Server.Data.Repositories
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The number of messages in the chat.</returns>
         Task<int> GetMessageCountAsync(string chatId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Searches for messages matching a query within a chat.
+        /// </summary>
+        /// <param name="chatId">The chat identifier.</param>
+        /// <param name="query">The search query.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A collection of matching messages.</returns>
+        Task<IEnumerable<Message>> SearchAsync(string chatId, string query, CancellationToken cancellationToken = default);
     }
 }

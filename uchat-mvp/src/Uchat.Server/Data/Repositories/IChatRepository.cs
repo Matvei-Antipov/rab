@@ -76,5 +76,14 @@ namespace Uchat.Server.Data.Repositories
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>True if the name exists for the user, false otherwise.</returns>
         Task<bool> ChatNameExistsForUserAsync(string name, string userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Searches for chats matching a query.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="query">The search query.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A collection of matching chats.</returns>
+        Task<IEnumerable<Chat>> SearchChatsAsync(string userId, string query, CancellationToken cancellationToken = default);
     }
 }

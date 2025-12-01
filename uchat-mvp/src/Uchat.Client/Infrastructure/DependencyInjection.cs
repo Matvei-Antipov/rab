@@ -121,6 +121,7 @@ namespace Uchat.Client.Infrastructure
             services.AddTransient<RegisterViewModel>();
             services.AddTransient<ChatViewModel>();
             services.AddTransient<GeneratorViewModel>();
+            services.AddTransient<SettingsViewModel>();
 
             return services;
         }
@@ -138,6 +139,7 @@ namespace Uchat.Client.Infrastructure
             services.AddTransient<RegisterView>();
             services.AddTransient<ChatView>();
             services.AddTransient<GeneratorView>();
+            services.AddTransient<SettingsView>();
 
             return services;
         }

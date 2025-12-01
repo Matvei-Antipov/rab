@@ -98,7 +98,22 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <ScrollViewer x:Name="PART_ContentHost"/>
+                        <Grid>
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                            
+                            <TextBlock x:Name="PlaceholderText"
+                                       Text="{TemplateBinding Tag}"
+                                       Foreground="#50FFFFFF"
+                                       FontStyle="Italic"
+                                       IsHitTestVisible="False"
+                                       Margin="2,0,0,0"
+                                       Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -195,23 +210,16 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            
-                            <Button Grid.Column="0" Command="{Binding NavigateBackCommand}" Background="Transparent" BorderThickness="0" 
-                                    Foreground="{StaticResource TextPrimary}" FontSize="14" Padding="15,0" Cursor="Hand" ToolTip="Back">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="ButtonBorder" Background="Transparent" CornerRadius="4" Padding="10,5">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="ButtonBorder" Property="Background" Value="#25FFFFFF"/>
-                                                <Setter Property="Foreground" Value="#FF00CC6A"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
-                                <TextBlock Text="Back"/>
+
+                            <Button Grid.Column="0" 
+                                    Command="{Binding NavigateBackCommand}" 
+                                    Style="{StaticResource RoundNavButtonStyle}" 
+                                    Width="36" Height="36" 
+                                    HorizontalAlignment="Left"
+                                    Margin="10,0,0,0" 
+                                    Background="#33354E" 
+                                    ToolTip="Back">
+                                <TextBlock Text="&#xE72B;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
                             </Button>
                             
                             <TextBlock Grid.Column="1" Text="TARAS 1.0" FontSize="16" Foreground="{StaticResource TextPrimary}" 
@@ -228,7 +236,7 @@
 
                         <Grid Grid.Row="2" Margin="25,15">
                             <TextBox Style="{StaticResource PromptTextBoxStyle}" 
-                                     Text="A modern office desk with laptop and cup of coffee, minimalist..." 
+                                     Tag="A modern office desk with laptop and cup of coffee, minimalist..." 
                                      VerticalAlignment="Top" Height="150"/>
                             
                             <TextBlock Text="45/500 characters" Foreground="{StaticResource TextSecondary}" FontSize="12" 
@@ -291,7 +299,7 @@
                                 <Grid>
                                     <TextBlock Text="TARAS" FontWeight="Bold" FontSize="28" Foreground="#503020" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.9">
-                                         <TextBlock.Effect>
+                                        <TextBlock.Effect>
                                             <DropShadowEffect Color="#FFFFFF" BlurRadius="2" ShadowDepth="0"/>
                                         </TextBlock.Effect>
                                     </TextBlock>
