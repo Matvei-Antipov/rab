@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ImageSource x:Key="AppBackgroundImageSource">/Views/bg_uchat.png</ImageSource>
+    <SolidColorBrush x:Key="AppBackgroundFallbackBrush" Color="#FF101010"/>
+    
+    <!-- ДОБАВЛЕНО для вашего SettingsView -->
+    <SolidColorBrush x:Key="AppOverlayBrush" Color="#99000000"/>
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="White"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#90FFFFFF"/>
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#AAAAAA"/>
+    <SolidColorBrush x:Key="TextInverseBrush" Color="Black"/>
+    <SolidColorBrush x:Key="GlassPanelBackgroundBrush" Color="#0DFFFFFF"/>
+    
+    <LinearGradientBrush x:Key="GlassPanelBorderBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#60FFFFFF" Offset="0.0"/>
+        <GradientStop Color="#00FFFFFF" Offset="0.5"/>
+        <GradientStop Color="#20FFFFFF" Offset="1.0"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="SeparatorBrush" Color="#20FFFFFF"/>
+
+    <SolidColorBrush x:Key="NavButtonBackgroundBrush" Color="#33354E"/>
+    <SolidColorBrush x:Key="NavButtonHoverBrush" Color="#4E517A"/>
+    <SolidColorBrush x:Key="NavButtonPressedBrush" Color="#2A2C40"/>
+    <SolidColorBrush x:Key="IconBrush" Color="White"/>
+
+    <SolidColorBrush x:Key="MessageBubbleMeBrush" Color="#25FFFFFF"/>
+    <SolidColorBrush x:Key="MessageBubbleMeBorderBrush" Color="#30FFFFFF"/>
+    <SolidColorBrush x:Key="MessageBubbleOtherBrush" Color="#40000000"/>
+    
+    <SolidColorBrush x:Key="InputBackgroundBrush" Color="#25FFFFFF"/>
+    <SolidColorBrush x:Key="SearchInputBackgroundBrush" Color="#20FFFFFF"/>
+
+    <SolidColorBrush x:Key="AccentColorBrush" Color="#FF00CC6A"/>
+    <SolidColorBrush x:Key="ErrorColorBrush" Color="#FF6B6B"/>
+</ResourceDictionary>

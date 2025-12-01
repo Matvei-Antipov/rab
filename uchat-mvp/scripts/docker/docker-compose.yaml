@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # --- MongoDB Sharding Infrastructure ---
+  
+  # 1. Config Server (Хранит метаданные кластера)
+  mongo-config:
+    image: mongo:6.0
+    command: mongod --configsvr --replSet rsConfig --bind_ip_all
+    ports: ["27019:27019"]
+    networks:
+      - uchat-net
+
+  # 2. Shard 1 (Хранилище данных 1)
+  mongo-shard1:
+    image: mongo:6.0
+    command: mongod --shardsvr --replSet rsShard1 --bind_ip_all
+    ports: ["27018:27018"]
+    networks:
+      - uchat-net
+
+  # 3. Shard 2 (Хранилище данных 2 - для демонстрации распределения)
+  mongo-shard2:
+    image: mongo:6.0
+    command: mongod --shardsvr --replSet rsShard2 --bind_ip_all
+    ports: ["27020:27018"]
+    networks:
+      - uchat-net
+
+  # 4. Mongos (Роутер - точка входа)
+  mongos:
+    image: mongo:6.0
+    command: mongos --configdb rsConfig/mongo-config:27019 --bind_ip_all
+    ports: ["27017:27017"]
+    depends_on:
+      - mongo-config
+      - mongo-shard1
+      - mongo-shard2
+    networks:
+      - uchat-net
+
+  # 5. Cluster Initializer (Магия без JS файлов на хосте)
+  # Этот контейнер запускается один раз, настраивает связи и умирает.
+  mongo-init-cluster:
+    image: mongo:6.0
+    volumes:
+      - ./scripts/init-sharding.js:/scripts/init-sharding.js # Статический файл, не временный!
+    command: >
+      bash -c "
+        echo 'Waiting for servers...' &&
+        sleep 10 &&
+        mongosh --host mongo-config:27019 --eval 'rs.initiate({_id: \"rsConfig\", configsvr: true, members: [{ _id: 0, host: \"mongo-config:27019\" }]})' &&
+        mongosh --host mongo-shard1:27018 --eval 'rs.initiate({_id: \"rsShard1\", members: [{ _id: 0, host: \"mongo-shard1:27018\" }]})' &&
+        mongosh --host mongo-shard2:27018 --eval 'rs.initiate({_id: \"rsShard2\", members: [{ _id: 0, host: \"mongo-shard2:27018\" }]})' &&
+        echo 'Waiting for replica sets...' &&
+        sleep 15 &&
+        mongosh --host mongos:27017 /scripts/init-sharding.js
+      "
+    depends_on:
+      - mongos
+    networks:
+      - uchat-net
+
+  # --- Другие сервисы ---
+
+  redis:
+    image: redis:alpine
+    ports: ["6379:6379"]
+    networks:
+      - uchat-net
+
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+    ports: ["1521:1521"]
+    volumes:
+      # Oracle сам накатит скрипты при первом запуске!
+      - ./config/oracle:/container-entrypoint-initdb.d
+    networks:
+      - uchat-net
+
+  # --- C# Seeder (Замена PowerShell для MongoDB схем) ---
+  db-seeder:
+    build: 
+      context: .
+      dockerfile: Dockerfile.Seeder
+    depends_on:
+      mongo-init-cluster:
+        condition: service_completed_successfully
+    volumes:
+      - ./config/mongodb:/app/configs # Монтируем JSON конфиги внутрь
+    environment:
+      MONGO_CONNECTION: "mongodb://mongos:27017"
+    networks:
+      - uchat-net
+
+networks:
+  uchat-net:
+    driver: bridge
