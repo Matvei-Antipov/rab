@@ -629,6 +629,38 @@ namespace Uchat.Client.ViewModels
         }
 
         [RelayCommand]
+        private async Task PreviewCodeAsync(AttachmentViewModel attachment)
+        {
+            if (attachment.AttachmentDto == null || !attachment.IsCodeFile)
+            {
+                return;
+            }
+
+            try
+            {
+                var filePath = await this.fileAttachmentService.DownloadAttachmentAsync(attachment.AttachmentDto);
+                if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                {
+                    this.errorHandlingService.ShowError("Failed to download code file for preview.");
+                    return;
+                }
+
+                var codeContent = await File.ReadAllTextAsync(filePath);
+                var previewWindow = new Views.CodePreviewWindow
+                {
+                    Owner = Application.Current.MainWindow,
+                };
+                previewWindow.LoadCode(codeContent, attachment.FileName);
+                previewWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error(ex, "Failed to preview code file");
+                this.errorHandlingService.ShowError($"Failed to preview code: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
         private async Task DeleteMessageAsync(MessageViewModel message)
         {
             if (!message.IsCurrentUser || message.IsDeleted)

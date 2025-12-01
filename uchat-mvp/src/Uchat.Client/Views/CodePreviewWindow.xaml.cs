@@ -20,6 +20,15 @@ namespace Uchat.Client.Views
         public CodePreviewWindow()
         {
             this.InitializeComponent();
+            this.KeyDown += this.CodePreviewWindow_KeyDown;
+        }
+
+        private void CodePreviewWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                this.Close();
+            }
         }
 
         /// <summary>
