@@ -47,6 +47,30 @@ namespace Uchat.Client.ViewModels
             this.isCurrentUser = messageDto.SenderId == currentUserId;
             this.attachments = new ObservableCollection<AttachmentViewModel>(
                 messageDto.Attachments?.Select(a => new AttachmentViewModel(a, fileAttachmentService)) ?? Enumerable.Empty<AttachmentViewModel>());
+
+            // Initialize image thumbnails asynchronously
+            if (fileAttachmentService != null)
+            {
+                _ = this.InitializeAttachmentsAsync();
+            }
+        }
+
+        private async System.Threading.Tasks.Task InitializeAttachmentsAsync()
+        {
+            foreach (var attachment in this.attachments)
+            {
+                if (attachment.IsImage)
+                {
+                    try
+                    {
+                        await attachment.InitializeAsync();
+                    }
+                    catch
+                    {
+                        // Ignore errors during initialization
+                    }
+                }
+            }
         }
 
         /// <summary>

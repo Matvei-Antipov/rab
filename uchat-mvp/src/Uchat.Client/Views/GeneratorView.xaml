@@ -8,26 +8,11 @@
              d:DesignHeight="750" d:DesignWidth="1000">
 
     <UserControl.Resources>
-        <SolidColorBrush x:Key="TextPrimary" Color="White"/>
-        <SolidColorBrush x:Key="TextSecondary" Color="#80FFFFFF"/>
-
         <Style x:Key="GlassPanelBorderStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="18"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Background">
-                <Setter.Value>
-                    <SolidColorBrush Color="#000000" Opacity="0.05"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="BorderBrush">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#60FFFFFF" Offset="0.0"/>
-                        <GradientStop Color="#00FFFFFF" Offset="0.5"/>
-                        <GradientStop Color="#20FFFFFF" Offset="1.0"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Background" Value="{DynamicResource GlassPanelBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource GlassPanelBorderBrush}"/>
         </Style>
 
         <Style TargetType="ListBoxItem">
@@ -59,8 +44,8 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="0,6"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Background" Value="#33354E"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource NavButtonBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource IconBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -76,10 +61,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#4E517A"/>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource NavButtonHoverBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#2A2C40"/>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource NavButtonPressedBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -89,12 +74,12 @@
 
         <Style x:Key="PromptTextBoxStyle" TargetType="TextBox">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#AAAAAA"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="AcceptsReturn" Value="True"/>
-            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -103,7 +88,7 @@
                             
                             <TextBlock x:Name="PlaceholderText"
                                        Text="{TemplateBinding Tag}"
-                                       Foreground="#50FFFFFF"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        FontStyle="Italic"
                                        IsHitTestVisible="False"
                                        Margin="2,0,0,0"
@@ -122,10 +107,10 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="bg_uchat.png" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="{DynamicResource AppBackgroundImageSource}" Stretch="UniformToFill"/>
         </Grid.Background>
         
-        <Border Background="#99000000"/>
+        <Border Background="{DynamicResource AppOverlayBrush}"/>
 
         <Grid x:Name="MainContentGrid">
             <Grid.ColumnDefinitions>
@@ -140,7 +125,6 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="0,0,0,10">
-                    <Border CornerRadius="18" Background="#18FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}"/>
 
                     <ListBox Margin="0,10,0,10"
@@ -165,7 +149,6 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Margin="0,0,0,0">
-                    <Border CornerRadius="25" Background="#18FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}" CornerRadius="25"/>
 
                     <StackPanel VerticalAlignment="Center" Margin="0,15,0,15" HorizontalAlignment="Center">
@@ -178,12 +161,12 @@
                                 Style="{StaticResource RoundNavButtonStyle}" 
                                 Background="#8C7B30" 
                                 ToolTip="Theme">
-                            <TextBlock Text="&#xE708;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding DataContext.ThemeIcon, RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=&#xE708;}" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
                         
-                        <Button Command="{Binding DataContext.NavigateToSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        <Button Command="{Binding NavigateToSettings}"
                                 Style="{StaticResource RoundNavButtonStyle}" 
-                                Background="#33354E" 
+                                Background="#4E5165" 
                                 ToolTip="Settings">
                             <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
@@ -192,7 +175,6 @@
             </Grid>
 
             <Grid Grid.Column="1" Margin="20,10,20,10">
-                <Border CornerRadius="18" Background="#18FFFFFF"/>
                 <Border Style="{StaticResource GlassPanelBorderStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -217,32 +199,31 @@
                                     Width="36" Height="36" 
                                     HorizontalAlignment="Left"
                                     Margin="10,0,0,0" 
-                                    Background="#33354E" 
                                     ToolTip="Back">
                                 <TextBlock Text="&#xE72B;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
                             </Button>
                             
-                            <TextBlock Grid.Column="1" Text="TARAS 1.0" FontSize="16" Foreground="{StaticResource TextPrimary}" 
+                            <TextBlock Grid.Column="1" Text="TARAS 1.0" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" 
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
-                        <Border Grid.Row="0" VerticalAlignment="Bottom" Height="1" Background="#20FFFFFF"/>
+                        <Border Grid.Row="0" VerticalAlignment="Bottom" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
                         <Grid Grid.Row="1" Margin="25,0">
-                            <TextBlock Text="Build: YYYY-MM-DD" Foreground="{StaticResource TextSecondary}" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBlock Text="Version: 1.0.0-beta.1" Foreground="{StaticResource TextSecondary}" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Text="Privacy &amp; Security Terms" Foreground="{StaticResource TextSecondary}" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand"/>
+                            <TextBlock Text="Build: YYYY-MM-DD" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="Version: 1.0.0-beta.1" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Privacy &amp; Security Terms" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand"/>
                         </Grid>
-                        <Border Grid.Row="1" VerticalAlignment="Bottom" Height="1" Background="#20FFFFFF"/>
+                        <Border Grid.Row="1" VerticalAlignment="Bottom" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
                         <Grid Grid.Row="2" Margin="25,15">
                             <TextBox Style="{StaticResource PromptTextBoxStyle}" 
                                      Tag="A modern office desk with laptop and cup of coffee, minimalist..." 
                                      VerticalAlignment="Top" Height="150"/>
                             
-                            <TextBlock Text="45/500 characters" Foreground="{StaticResource TextSecondary}" FontSize="12" 
+                            <TextBlock Text="45/500 characters" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" 
                                        HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                         </Grid>
-                        <Border Grid.Row="2" VerticalAlignment="Bottom" Height="1" Background="#20FFFFFF"/>
+                        <Border Grid.Row="2" VerticalAlignment="Bottom" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
                         <Grid Grid.Row="3">
                             <Grid.ColumnDefinitions>
@@ -251,7 +232,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0" Content="SAVE INTO" Background="Transparent" Foreground="{StaticResource TextPrimary}"
+                            <Button Grid.Column="0" Content="SAVE INTO" Background="Transparent" Foreground="{DynamicResource TextPrimaryBrush}"
                                     BorderThickness="0" Cursor="Hand" FontSize="12">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
@@ -260,16 +241,16 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Foreground" Value="#FF00CC6A"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentColorBrush}"/>
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
 
-                            <Border Grid.Column="1" Background="#20FFFFFF" Margin="0,10"/>
+                            <Border Grid.Column="1" Background="{DynamicResource SeparatorBrush}" Margin="0,10"/>
 
-                            <Button Grid.Column="2" Content="SEND TO" Background="Transparent" Foreground="{StaticResource TextPrimary}"
+                            <Button Grid.Column="2" Content="SEND TO" Background="Transparent" Foreground="{DynamicResource TextPrimaryBrush}"
                                     BorderThickness="0" Cursor="Hand" FontSize="12">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
@@ -278,14 +259,14 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Foreground" Value="#FF00CC6A"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentColorBrush}"/>
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
                         </Grid>
-                        <Border Grid.Row="3" VerticalAlignment="Bottom" Height="1" Background="#20FFFFFF"/>
+                        <Border Grid.Row="3" VerticalAlignment="Bottom" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
                         <Grid Grid.Row="4" Margin="25,15">
                             <Grid.RowDefinitions>
@@ -293,9 +274,9 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             
-                            <TextBlock Grid.Row="0" Text="[TARAS V1] Generated X min ago... :" Foreground="{StaticResource TextPrimary}" FontSize="12" Margin="0,0,0,10"/>
+                            <TextBlock Grid.Row="0" Text="[TARAS V1] Generated X min ago... :" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" Margin="0,0,0,10"/>
                             
-                            <Border Grid.Row="1" Width="180" Height="100" CornerRadius="4" HorizontalAlignment="Left" Background="#252545">
+                            <Border Grid.Row="1" Width="180" Height="100" CornerRadius="4" HorizontalAlignment="Left" Background="{DynamicResource NavButtonBackgroundBrush}">
                                 <Grid>
                                     <TextBlock Text="TARAS" FontWeight="Bold" FontSize="28" Foreground="#503020" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.9">
@@ -306,14 +287,14 @@
 
                                     <Border Background="#90202020" CornerRadius="4" Width="30" Height="20" 
                                             HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
-                                         <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="White" 
+                                         <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="{DynamicResource TextInverseBrush}" 
                                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                 </Grid>
                             </Border>
                         </Grid>
                         
-                        <Border Grid.Row="5" VerticalAlignment="Top" Height="1" Background="#20FFFFFF"/>
+                        <Border Grid.Row="5" VerticalAlignment="Top" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
                         <Grid Grid.Row="5" Margin="10,0">
                             <Grid.ColumnDefinitions>
@@ -321,19 +302,19 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             
-                            <TextBlock Text="&#xE81C;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="White" 
+                            <TextBlock Text="&#xE81C;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource IconBrush}" 
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             
-                            <Border Grid.Column="0" HorizontalAlignment="Right" Width="1" Background="#30FFFFFF" Margin="0,10"/>
+                            <Border Grid.Column="0" HorizontalAlignment="Right" Width="1" Background="{DynamicResource SeparatorBrush}" Margin="0,10"/>
 
                             <TextBlock Grid.Column="1" Text="[Згенеруй мені банан], [Generate Galaxy Z Fold for my granny], [Millenial...]" 
-                                       Foreground="#80FFFFFF" FontSize="12" VerticalAlignment="Center" Margin="15,0,0,0"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" VerticalAlignment="Center" Margin="15,0,0,0"
                                        TextTrimming="CharacterEllipsis"/>
                         </Grid>
                         
-                        <Border Grid.Row="6" VerticalAlignment="Top" Height="1" Background="#20FFFFFF"/>
+                        <Border Grid.Row="6" VerticalAlignment="Top" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
-                        <Button Grid.Row="6" Content="GENERATE" Background="Transparent" Foreground="#CCCCCC"
+                        <Button Grid.Row="6" Content="GENERATE" Background="Transparent" Foreground="{DynamicResource TextTertiaryBrush}"
                                 BorderThickness="0" Cursor="Hand" FontSize="12" FontWeight="SemiBold">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
@@ -342,7 +323,7 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>

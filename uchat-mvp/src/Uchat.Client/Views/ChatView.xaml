@@ -14,6 +14,7 @@
         <converters:BooleanToAlignmentConverter x:Key="BooleanToAlignmentConverter"/>
         <converters:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
         <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <converters:FirstCharacterConverter x:Key="FirstCharacterConverter"/>
 
         <Style TargetType="Button" x:Key="RoundNavButtonStyle">
             <Setter Property="Width" Value="40"/>
@@ -159,16 +160,17 @@
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="Auto"/>
                                                             </Grid.RowDefinitions>
-                                                           
+                                                            
                                                             <Button Grid.Row="0" 
-                                                                    Command="{Binding DataContext.RequestPlayAudioCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                                    Command="{Binding DataContext.ViewImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                                     CommandParameter="{Binding}"
                                                                     Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand" 
                                                                     Visibility="{Binding IsImage, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                                                     Margin="0,0,0,5">
-                                                                <Border CornerRadius="8" MaxHeight="200" Background="#252545"> <Grid>
+                                                                <Border CornerRadius="8" MaxHeight="200" Background="#252545"> 
+                                                                    <Grid>
                                                                         <Image Source="{Binding ThumbnailImage}" Stretch="Uniform" MaxHeight="200" Visibility="{Binding HasThumbnail, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                                        <TextBlock Text="Loading..." Foreground="{DynamicResource TextTertiaryBrush}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="20" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}"/>
+                                                                        <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="40" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="20" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}"/>
                                                                     </Grid>
                                                                 </Border>
                                                             </Button>
@@ -203,7 +205,7 @@
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
-                                       
+                                        
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
                                             <TextBlock Text="Edited" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10" Margin="0,0,5,0" FontStyle="Italic" Visibility="{Binding IsEdited, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                             <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:HH:mm}'}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
@@ -246,7 +248,7 @@
             <ImageBrush ImageSource="{DynamicResource AppBackgroundImageSource}" Stretch="UniformToFill"/>
         </Grid.Background>
         
-        <Border Background="#99000000"/>
+        <Border Background="{DynamicResource AppOverlayBrush}"/>
 
         <Grid x:Name="MainContentGrid">
             <Grid.ColumnDefinitions>
@@ -262,7 +264,6 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="0,0,0,10">
-                    <Border CornerRadius="18" Background="#18FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}"/>
                     <ListBox Margin="0,10,0,10" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Center">
                         <ListBox.ItemTemplate>
@@ -279,7 +280,6 @@
                 </Grid>
 
                 <Grid Grid.Row="1">
-                    <Border CornerRadius="25" Background="#18FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}" CornerRadius="25"/>
                     <StackPanel VerticalAlignment="Center" Margin="0,15,0,15" HorizontalAlignment="Center">
                         <Button Command="{Binding DataContext.NavigateToGeneratorCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource RoundNavButtonStyle}" Background="#5B4B6F" ToolTip="Gallery">
@@ -298,7 +298,6 @@
             </Grid>
             
             <Grid Grid.Column="1" Margin="0,10,0,10">
-                <Border CornerRadius="18" Background="#18FFFFFF"/>
                 <Border Style="{StaticResource GlassPanelBorderStyle}">
                     <Grid Margin="10">
                         <Grid.RowDefinitions>
@@ -373,7 +372,6 @@
             <GridSplitter Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="2" Background="Transparent" ShowsPreview="True"/>
 
             <Grid Grid.Column="2" Margin="10,10,10,10">
-                <Border CornerRadius="18" Background="#18FFFFFF"/>
                 <Border Style="{StaticResource GlassPanelBorderStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -389,14 +387,28 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="220"/> 
                             </Grid.ColumnDefinitions>
-                            <Ellipse Width="10" Height="10" Fill="{DynamicResource AccentColorBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorColorBrush}" Background="#20000000" Padding="5" Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            
+                            <Button Grid.Column="0" Command="{Binding OpenUserProfileCommand}" Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <Grid Margin="0,0,12,0">
+                                        <Ellipse Width="40" Height="40" Fill="{DynamicResource NavButtonBackgroundBrush}"/>
+                                        <TextBlock Text="{Binding SelectedConversation.Name, Converter={StaticResource FirstCharacterConverter}}" Foreground="{DynamicResource IconBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16"/>
+                                        <Ellipse Width="10" Height="10" Fill="{DynamicResource AccentColorBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,-2,0"/>
+                                    </Grid>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SelectedConversation.Name}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="Online" Foreground="{DynamicResource AccentColorBrush}" FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                            
+                            <TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorColorBrush}" Background="#20000000" Padding="5" Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}" Margin="10,0,0,0"/>
                             
                             <Border Grid.Column="3" Background="{DynamicResource SearchInputBackgroundBrush}" CornerRadius="12" Height="32">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/> 
-                                        <ColumnDefinition Width="*"/>    
+                                        <ColumnDefinition Width="*"/>     
                                         <ColumnDefinition Width="Auto"/> 
                                     </Grid.ColumnDefinitions>
                                     
@@ -408,14 +420,9 @@
                                         </TextBox.InputBindings>
                                     </TextBox>
                                     
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,5,0">
-                                        <Button Command="{Binding ClearMessageSearchCommand}" Style="{StaticResource CircularIconButtonStyle}" Width="20" Height="20" ToolTip="Clear search">
-                                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="{DynamicResource TextTertiaryBrush}"/>
-                                        </Button>
-                                        <Button Command="{Binding SearchMessagesInChatCommand}" Style="{StaticResource CircularIconButtonStyle}" Width="24" Height="24" ToolTip="Search">
-                                            <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource IconBrush}"/>
-                                        </Button>
-                                    </StackPanel>
+                                    <Button Grid.Column="2" Command="{Binding ClearMessageSearchCommand}" Style="{StaticResource CircularIconButtonStyle}" Width="20" Height="20" Margin="0,0,5,0" ToolTip="Clear search">
+                                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" Foreground="{DynamicResource TextTertiaryBrush}"/>
+                                    </Button>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -545,6 +552,283 @@
                     </Grid>
                 </Border>
             </Grid>
+        </Grid>
+
+        <Grid x:Name="UserProfileOverlay" Visibility="{Binding IsUserProfileVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{DynamicResource ProfileOverlayBrush}" MouseDown="UserProfileOverlay_MouseDown">
+            <Border Width="650" Style="{StaticResource GlassPanelBorderStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" MouseDown="UserProfileModal_MouseDown">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="35,25">
+                            <Button Command="{Binding CloseUserProfileCommand}" 
+                                    Style="{StaticResource RoundNavButtonStyle}" 
+                                    Width="36" Height="36" 
+                                    HorizontalAlignment="Left" 
+                                    ToolTip="Close Profile">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+                            </Button>
+                            <TextBlock Text="Profile" FontSize="28" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Light" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.8">
+                                <TextBlock Text="&#xE8BF;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ProfileUsername, StringFormat='@{0}', FallbackValue='@username'}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Grid.Row="1" Height="1" Background="{DynamicResource SeparatorBrush}"/>
+
+                        <Grid Grid.Row="2" Margin="35,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding SelectedConversation.Name, FallbackValue='User Name'}" Foreground="{DynamicResource TextTertiaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="1" Text="Online" Foreground="{DynamicResource AccentColorBrush}" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="Privacy &amp; Security" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" HorizontalAlignment="Right" Cursor="Hand" TextDecorations="Underline"/>
+                        </Grid>
+
+                        <Border Grid.Row="3" Height="1" Background="{DynamicResource SeparatorBrush}"/>
+
+                        <StackPanel Grid.Row="4" Margin="0,30">
+                            <Grid Width="110" Height="110">
+                                <Ellipse>
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect Color="#EEDC9A" BlurRadius="30" Opacity="0.4" ShadowDepth="0"/>
+                                    </Ellipse.Effect>
+                                    <Ellipse.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F0E6B5" Offset="0"/>
+                                            <GradientStop Color="#C4A068" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <TextBlock Text="{Binding SelectedConversation.Name, Converter={StaticResource FirstCharacterConverter}, FallbackValue='U'}" FontFamily="Segoe UI" FontSize="44" Foreground="#503010" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                            </Grid>
+                            
+                            <Border Background="{DynamicResource NavButtonBackgroundBrush}" CornerRadius="18" HorizontalAlignment="Center" Margin="0,20,0,0" Padding="20,8" Cursor="Hand">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding SelectedConversation.Name, FallbackValue='User Name'}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="15" FontWeight="SemiBold"/>
+                                    <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource IconBrush}" Margin="10,0,0,0" FontSize="12" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <Border Grid.Row="5" Height="1" Background="{DynamicResource SeparatorBrush}"/>
+
+                        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15" Visibility="{Binding ProfileEmail, Converter={StaticResource NullToVisibilityConverter}}">
+                            <TextBlock Text="g-mail: " Foreground="{DynamicResource TextSecondaryBrush}" FontSize="14"/>
+                            <TextBlock Text="{Binding ProfileEmail}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="14"/>
+                            <TextBlock Text="&#xE8A7;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,2,0,0" VerticalAlignment="Center" Cursor="Hand" FontSize="14"/>
+                        </StackPanel>
+
+                        <Border Grid.Row="7" Height="1" Background="{DynamicResource SeparatorBrush}"/>
+
+                        <Grid Grid.Row="8" Margin="35,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0" Background="Transparent" BorderThickness="0" Command="{Binding OpenFilesListCommand}" Cursor="Hand" Visibility="{Binding FilesCount, Converter={StaticResource CountToVisibilityConverter}}">
+                                <StackPanel>
+                                    <TextBlock Text="Files" Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,15" FontSize="14"/>
+                                    <Grid Width="60" Height="60" HorizontalAlignment="Center">
+                                        <Ellipse Fill="#15000000"/>
+                                        <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="#6495ED" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <TextBlock Text="{Binding FilesCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Border Grid.Column="1" Background="{DynamicResource SeparatorBrush}" VerticalAlignment="Stretch" Visibility="{Binding FilesCount, Converter={StaticResource CountToVisibilityConverter}}"/>
+
+                            <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Command="{Binding OpenImagesGridCommand}" Cursor="Hand" Visibility="{Binding ImagesCount, Converter={StaticResource CountToVisibilityConverter}}">
+                                <StackPanel>
+                                    <TextBlock Text="Images" Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,15" FontSize="14"/>
+                                    <Grid Width="60" Height="60" HorizontalAlignment="Center">
+                                        <Ellipse Fill="#15000000"/>
+                                        <TextBlock Text="&#xEB9F;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="#FF69B4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <TextBlock Text="{Binding ImagesCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Border Grid.Column="3" Background="{DynamicResource SeparatorBrush}" VerticalAlignment="Stretch" Visibility="{Binding VideosCount, Converter={StaticResource CountToVisibilityConverter}}"/>
+
+                            <StackPanel Grid.Column="4" Visibility="{Binding VideosCount, Converter={StaticResource CountToVisibilityConverter}}">
+                                <TextBlock Text="Videos" Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,15" FontSize="14"/>
+                                <Grid Width="60" Height="60" HorizontalAlignment="Center">
+                                    <Ellipse Fill="#15000000"/>
+                                    <TextBlock Text="&#xE714;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="#9370DB" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                                <TextBlock Text="{Binding VideosCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Grid.Row="9" Height="1" Background="{DynamicResource SeparatorBrush}"/>
+
+                        <!-- Images Preview -->
+                        <StackPanel Grid.Row="10" Margin="35,20" Visibility="{Binding ImagesCount, Converter={StaticResource CountToVisibilityConverter}}">
+                            <TextBlock Text="Recent Images" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,10"/>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                                <ItemsControl ItemsSource="{Binding ImagesList}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="80" Height="80" Margin="0,0,10,0" CornerRadius="8" 
+                                                    BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1"
+                                                    Cursor="Hand" ToolTip="{Binding FileName}">
+                                                <Button Command="{Binding DataContext.ViewImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                        CommandParameter="{Binding}" 
+                                                        Background="Transparent" BorderThickness="0" Padding="0">
+                                                    <Grid>
+                                                        <Image Source="{Binding ThumbnailImage}" Stretch="UniformToFill" 
+                                                               Visibility="{Binding HasThumbnail, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                            <Image.Clip>
+                                                                <RectangleGeometry Rect="0,0,80,80" RadiusX="8" RadiusY="8"/>
+                                                            </Image.Clip>
+                                                        </Image>
+                                                        <Border Background="#20000000" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}">
+                                                            <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="30" 
+                                                                       Foreground="{DynamicResource TextTertiaryBrush}" 
+                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </Grid>
+                                                </Button>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </StackPanel>
+
+                        <!-- Files Preview -->
+                        <StackPanel Grid.Row="11" Margin="35,20" Visibility="{Binding FilesCount, Converter={StaticResource CountToVisibilityConverter}}">
+                            <TextBlock Text="Recent Files" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,10"/>
+                            <ItemsControl ItemsSource="{Binding FilesList}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,8" Padding="10" Background="{DynamicResource GlassPanelBackgroundBrush}" 
+                                                CornerRadius="8" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1"
+                                                Cursor="Hand" ToolTip="{Binding FileName}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" 
+                                                           FontSize="20" Foreground="{DynamicResource IconBrush}" 
+                                                           Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding FileName}" Foreground="{DynamicResource TextPrimaryBrush}" 
+                                                               FontSize="12" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding FileSizeFormatted}" Foreground="{DynamicResource TextSecondaryBrush}" 
+                                                               FontSize="10" Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                                <Button Grid.ColumnSpan="2" Command="{Binding DataContext.OpenAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                        CommandParameter="{Binding}" Background="Transparent" BorderThickness="0"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <Border Grid.Row="12" Height="1" Background="{DynamicResource SeparatorBrush}"/>
+
+                        <StackPanel Grid.Row="12" Margin="35,25,35,35">
+                            <Grid HorizontalAlignment="Center" Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Button Grid.Column="0" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
+                                    <StackPanel>
+                                        <TextBlock Text="&#xE72D;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Share" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource NavButtonBackgroundBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                
+                                <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
+                                    <StackPanel>
+                                        <TextBlock Text="&#xE25B;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource ErrorColorBrush}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Block" Foreground="{DynamicResource ErrorColorBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource NavButtonBackgroundBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                
+                                <Button Grid.Column="4" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
+                                    <StackPanel>
+                                        <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource ErrorColorBrush}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Delete" Foreground="{DynamicResource ErrorColorBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource NavButtonBackgroundBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

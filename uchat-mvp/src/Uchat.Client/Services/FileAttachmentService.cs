@@ -15,41 +15,45 @@ namespace Uchat.Client.Services
     using Uchat.Shared.Dtos;
     using Uchat.Shared.Helpers;
 
-    /// <summary>
-    /// Implementation of file attachment service for WPF client.
-    /// </summary>
-    public class FileAttachmentService : IFileAttachmentService
-    {
-        private readonly HttpClient httpClient;
-        private readonly ILogger logger;
-        private readonly IErrorHandlingService errorHandler;
-        private readonly string downloadPath;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileAttachmentService"/> class.
+        /// Implementation of file attachment service for WPF client with robust caching.
         /// </summary>
-        /// <param name="httpClient">HTTP client for file transfers.</param>
-        /// <param name="logger">Logger instance.</param>
-        /// <param name="errorHandler">Error handling service.</param>
-        public FileAttachmentService(
-            HttpClient httpClient,
-            ILogger logger,
-            IErrorHandlingService errorHandler)
+        public class FileAttachmentService : IFileAttachmentService
+        {
+            private readonly HttpClient httpClient;
+            private readonly ILogger logger;
+            private readonly IErrorHandlingService errorHandler;
+            private readonly string downloadPath;
+            private readonly string cachePath;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="FileAttachmentService"/> class.
+            /// </summary>
+            /// <param name="httpClient">The HTTP client for making requests.</param>
+            /// <param name="logger">The logger for logging operations.</param>
+            /// <param name="errorHandler">The error handling service.</param>
+            public FileAttachmentService(
+                HttpClient httpClient,
+                ILogger logger,
+                IErrorHandlingService errorHandler)
         {
             this.httpClient = httpClient;
             this.logger = logger;
             this.errorHandler = errorHandler;
 
-            // Create downloads directory in user's Documents folder
-            this.downloadPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "Uchat",
-                "Downloads");
+            var baseFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Uchat");
+            this.downloadPath = Path.Combine(baseFolder, "Downloads");
+            this.cachePath = Path.Combine(baseFolder, "Cache");
 
             Directory.CreateDirectory(this.downloadPath);
+            Directory.CreateDirectory(this.cachePath);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Shows a file picker dialog to select files for attachment.
+        /// </summary>
+        /// <param name="multiSelect">Whether to allow multiple file selection.</param>
+        /// <returns>A task containing the list of selected file paths.</returns>
         public Task<List<string>> PickFilesAsync(bool multiSelect = true)
         {
             return Task.Run(() =>
@@ -65,8 +69,7 @@ namespace Uchat.Client.Services
                              "Code Files (*.cs;*.js;*.py;*.java)|*.cs;*.js;*.py;*.java",
                 };
 
-                var result = dialog.ShowDialog();
-                if (result == true)
+                if (dialog.ShowDialog() == true)
                 {
                     return dialog.FileNames.ToList();
                 }
@@ -75,98 +78,60 @@ namespace Uchat.Client.Services
             });
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Uploads a file attachment to the server.
+        /// </summary>
+        /// <param name="filePath">The local file path to upload.</param>
+        /// <param name="messageId">The message ID to associate with the attachment.</param>
+        /// <param name="contentStream">Optional content stream to upload instead of reading from file.</param>
+        /// <param name="cancellationToken">Cancellation token for the operation.</param>
+        /// <returns>A task containing the uploaded attachment DTO.</returns>
         public async Task<MessageAttachmentDto> UploadAttachmentAsync(
             string filePath,
             string messageId,
             Stream? contentStream = null,
             CancellationToken cancellationToken = default)
         {
+            FileStream? fileStream = null;
             try
             {
-                // Validate file
                 var validation = this.ValidateFile(filePath);
-                if (!validation.IsValid)
-                {
-                    throw new InvalidOperationException(validation.ErrorMessage);
-                }
+                if (!validation.IsValid) throw new InvalidOperationException(validation.ErrorMessage);
 
                 var fileInfo = new FileInfo(filePath);
                 var fileName = fileInfo.Name;
 
-                this.logger.Debug(
-                    "Uploading file: {FileName}, Original size: {Size}, Using compressed stream: {HasCompressedStream}",
-                    fileName,
-                    FileHelper.FormatFileSize(fileInfo.Length),
-                    contentStream != null);
+                this.logger.Debug("Uploading file: {FileName}", fileName);
 
-                // Create multipart form data
                 using var content = new MultipartFormDataContent();
-
-                // Use provided compressed stream or open original file
                 Stream streamToUpload;
-                FileStream? fileStream = null;
-                long? compressedStreamLength = null;
 
                 if (contentStream != null)
                 {
-                    // Use compressed stream - caller will dispose it
-                    // Reset position in case it was read before
-                    if (contentStream.CanSeek)
-                    {
-                        contentStream.Position = 0;
-                        compressedStreamLength = contentStream.Length;
-                    }
-
+                    if (contentStream.CanSeek) contentStream.Position = 0;
                     streamToUpload = contentStream;
-                    this.logger.Debug(
-                        "Using compressed stream for upload: {FileName}, Stream length: {Length}",
-                        fileName,
-                        compressedStreamLength?.ToString() ?? "unknown");
                 }
                 else
                 {
-                    // Use original file - we'll dispose it after upload
                     fileStream = File.OpenRead(filePath);
                     streamToUpload = fileStream;
-                    this.logger.Debug("Using original file for upload: {FileName}", fileName);
                 }
 
-                // StreamContent will NOT dispose the underlying stream by default
-                // We need to manage disposal ourselves
                 using var streamContent = new StreamContent(streamToUpload);
-
                 streamContent.Headers.ContentType = new MediaTypeHeaderValue(FileHelper.GetContentType(fileName));
                 content.Add(streamContent, "file", fileName);
                 content.Add(new StringContent(messageId), "messageId");
 
-                // Upload to server
-                var response = await this.httpClient.PostAsync(
-                    "/api/attachments/upload",
-                    content,
-                    cancellationToken);
-
+                var response = await this.httpClient.PostAsync("/api/attachments/upload", content, cancellationToken);
                 response.EnsureSuccessStatusCode();
 
-                // Dispose file stream if we opened it (compressed stream is disposed by caller)
-                if (fileStream != null)
-                {
-                    fileStream.Dispose();
-                }
-
                 var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                var attachment = JsonSerializer.Deserialize<MessageAttachmentDto>(
-                    json,
+                var attachment = JsonSerializer.Deserialize<MessageAttachmentDto>(json,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                    ?? throw new InvalidOperationException("Failed to deserialize attachment response");
+                    ?? throw new InvalidOperationException("Failed to deserialize attachment");
 
-                var uploadedSize = compressedStreamLength ?? fileInfo.Length;
-
-                this.logger.Information(
-                    "File uploaded successfully: {FileName}, Original size: {OriginalSize}, Uploaded size: {UploadedSize}",
-                    fileName,
-                    FileHelper.FormatFileSize(fileInfo.Length),
-                    FileHelper.FormatFileSize(uploadedSize));
+                // Сохраняем оригинал в кэш сразу же (копируем исходный файл)
+                await this.CacheLocalFileAsync(filePath, attachment);
 
                 return attachment;
             }
@@ -176,228 +141,286 @@ namespace Uchat.Client.Services
                 this.errorHandler.ShowError($"Failed to upload file: {ex.Message}");
                 throw;
             }
+            finally
+            {
+                fileStream?.Dispose();
+            }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Downloads an attachment to the local downloads folder.
+        /// </summary>
+        /// <param name="attachment">The attachment DTO to download.</param>
+        /// <param name="cancellationToken">Cancellation token for the operation.</param>
+        /// <returns>A task containing the local file path where the attachment was saved.</returns>
         public async Task<string> DownloadAttachmentAsync(
             MessageAttachmentDto attachment,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                // Download file from server
-                var response = await this.httpClient.GetAsync(
-                    attachment.DownloadUrl,
-                    HttpCompletionOption.ResponseHeadersRead,
-                    cancellationToken);
+                var localPath = this.GetUniqueFilePath(this.downloadPath, attachment.FileName);
 
-                response.EnsureSuccessStatusCode();
-
-                // Save to downloads folder
-                var localPath = Path.Combine(this.downloadPath, attachment.FileName);
-
-                // If file exists, add number suffix
-                var counter = 1;
-                while (File.Exists(localPath))
+                // 1. Пробуем взять из кэша
+                var cachedPath = this.GetCachedFilePath(attachment);
+                if (File.Exists(cachedPath))
                 {
-                    var nameWithoutExt = Path.GetFileNameWithoutExtension(attachment.FileName);
-                    var extension = Path.GetExtension(attachment.FileName);
-                    localPath = Path.Combine(this.downloadPath, $"{nameWithoutExt} ({counter}){extension}");
-                    counter++;
+                    File.Copy(cachedPath, localPath, true);
+                    this.logger.Information("File restored from cache: {Path}", localPath);
+                    return localPath;
                 }
 
-                using var fileStream = File.Create(localPath);
-                using var contentStream = await response.Content.ReadAsStreamAsync();
-                await contentStream.CopyToAsync(fileStream, cancellationToken);
+                // 2. Если нет в кэше - качаем
+                var response = await this.httpClient.GetAsync(attachment.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                response.EnsureSuccessStatusCode();
 
-                this.logger.Information("File downloaded: {FileName} to {Path}", attachment.FileName, localPath);
+                using (var fileStream = File.Create(localPath))
+                using (var networkStream = await response.Content.ReadAsStreamAsync(cancellationToken))
+                {
+                    await networkStream.CopyToAsync(fileStream, cancellationToken);
+                }
 
+                // 3. Сохраняем в кэш на будущее
+                _ = this.CacheLocalFileAsync(localPath, attachment);
+
+                this.logger.Information("File downloaded: {Path}", localPath);
                 return localPath;
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Failed to download attachment: {AttachmentId}", attachment.Id);
-                this.errorHandler.ShowError($"Failed to download file: {ex.Message}");
+                this.logger.Error(ex, "Failed to download attachment: {Id}", attachment.Id);
+                this.errorHandler.ShowError($"Failed to download: {ex.Message}");
                 throw;
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Prompts the user to choose a save location and saves the attachment.
+        /// </summary>
+        /// <param name="attachment">The attachment DTO to save.</param>
+        /// <param name="cancellationToken">Cancellation token for the operation.</param>
+        /// <returns>A task containing the chosen save path, or null if cancelled.</returns>
         public async Task<string?> SaveAttachmentAsAsync(
             MessageAttachmentDto attachment,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                // Show SaveFileDialog for  user to choose location
                 var saveDialog = new SaveFileDialog
                 {
                     FileName = attachment.FileName,
-                    Title = "Save Image As",
-                    Filter = $"Image files (*{Path.GetExtension(attachment.FileName)})|*{Path.GetExtension(attachment.FileName)}|All files (*.*)|*.*",
-                    DefaultExt = Path.GetExtension(attachment.FileName),
+                    Title = "Save File As",
+                    Filter = $"Current Type (*{Path.GetExtension(attachment.FileName)})|*{Path.GetExtension(attachment.FileName)}|All files (*.*)|*.*"
                 };
 
-                var result = saveDialog.ShowDialog();
-                if (result != true)
+                if (saveDialog.ShowDialog() != true) return null;
+
+                var destinationPath = saveDialog.FileName;
+                var cachedPath = this.GetCachedFilePath(attachment);
+
+                if (File.Exists(cachedPath))
                 {
-                    // User cancelled
-                    return null;
+                    File.Copy(cachedPath, destinationPath, true);
+                }
+                else
+                {
+                    var response = await this.httpClient.GetAsync(attachment.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                    response.EnsureSuccessStatusCode();
+                    
+                    using var fs = File.Create(destinationPath);
+                    await response.Content.CopyToAsync(fs, cancellationToken);
+                    
+                    _ = this.CacheLocalFileAsync(destinationPath, attachment);
                 }
 
-                var localPath = saveDialog.FileName;
-
-                // Download file from server
-                var response = await this.httpClient.GetAsync(
-                    attachment.DownloadUrl,
-                    HttpCompletionOption.ResponseHeadersRead,
-                    cancellationToken);
-
-                response.EnsureSuccessStatusCode();
-
-                // Save to chosen location
-                using var fileStream = File.Create(localPath);
-                using var contentStream = await response.Content.ReadAsStreamAsync();
-                await contentStream.CopyToAsync(fileStream, cancellationToken);
-
-                this.logger.Information("File saved: {FileName} to {Path}", attachment.FileName, localPath);
-                this.errorHandler.ShowInfo($"Image saved to: {localPath}");
-
-                return localPath;
+                this.errorHandler.ShowInfo($"Saved to: {destinationPath}");
+                return destinationPath;
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Failed to save attachment: {AttachmentId}", attachment.Id);
-                this.errorHandler.ShowError($"Failed to save file: {ex.Message}");
+                this.logger.Error(ex, "Failed to save attachment");
+                this.errorHandler.ShowError("Failed to save file.");
                 throw;
             }
         }
 
-        /// <inheritdoc/>
-        public async Task OpenAttachmentAsync(
-            MessageAttachmentDto attachment,
-            CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Opens an attachment using the system's default application.
+        /// </summary>
+        /// <param name="attachment">The attachment DTO to open.</param>
+        /// <param name="cancellationToken">Cancellation token for the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task OpenAttachmentAsync(MessageAttachmentDto attachment, CancellationToken cancellationToken = default)
         {
             try
             {
-                // First download the file
-                var localPath = await this.DownloadAttachmentAsync(attachment, cancellationToken);
+                // Проверяем, скачан ли файл явно пользователем
+                var userDownloadPath = Path.Combine(this.downloadPath, attachment.FileName);
+                string pathToOpen;
 
-                // Open with default application
-                var process = new Process
+                if (File.Exists(userDownloadPath))
                 {
-                    StartInfo = new ProcessStartInfo(localPath)
-                    {
-                        UseShellExecute = true,
-                    },
-                };
-
-                process.Start();
-
-                this.logger.Information("Opened attachment: {FileName}", attachment.FileName);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex, "Failed to open attachment: {AttachmentId}", attachment.Id);
-                this.errorHandler.ShowError($"Failed to open file: {ex.Message}");
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<Stream> DownloadImageStreamAsync(
-            MessageAttachmentDto attachment,
-            CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                // Download file from server
-                var response = await this.httpClient.GetAsync(
-                    attachment.DownloadUrl,
-                    HttpCompletionOption.ResponseHeadersRead,
-                    cancellationToken);
-
-                response.EnsureSuccessStatusCode();
-
-                // Return stream for preview
-                var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-                return stream;
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex, "Failed to download image stream: {AttachmentId}", attachment.Id);
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<Stream> DownloadThumbnailStreamAsync(
-            MessageAttachmentDto attachment,
-            CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(attachment.ThumbnailUrl))
+                    pathToOpen = userDownloadPath;
+                }
+                else
                 {
-                    throw new InvalidOperationException("Thumbnail URL is not available for this attachment.");
+                    // Если нет - скачиваем (этот метод теперь сам проверит кэш)
+                    pathToOpen = await this.DownloadAttachmentAsync(attachment, cancellationToken);
                 }
 
-                // Download thumbnail from server
-                var response = await this.httpClient.GetAsync(
-                    attachment.ThumbnailUrl,
-                    HttpCompletionOption.ResponseHeadersRead,
-                    cancellationToken);
-
-                response.EnsureSuccessStatusCode();
-
-                // Return stream for preview
-                var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-                return stream;
+                new Process { StartInfo = new ProcessStartInfo(pathToOpen) { UseShellExecute = true } }.Start();
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Failed to download thumbnail stream: {AttachmentId}", attachment.Id);
-                throw;
+                this.errorHandler.ShowError($"Could not open file: {ex.Message}");
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Downloads the full image as a stream using caching.
+        /// </summary>
+        /// <param name="attachment">The attachment DTO representing the image.</param>
+        /// <param name="cancellationToken">Cancellation token for the operation.</param>
+        /// <returns>A task containing the image stream.</returns>
+        public async Task<Stream> DownloadImageStreamAsync(MessageAttachmentDto attachment, CancellationToken cancellationToken = default)
+        {
+            // Скачиваем полную картинку через механизм кэширования в память
+            return await this.GetCachedStreamAsync(attachment, attachment.DownloadUrl, cancellationToken, isThumbnail: false);
+        }
+
+        /// <summary>
+        /// Downloads the thumbnail image as a stream using caching.
+        /// </summary>
+        /// <param name="attachment">The attachment DTO representing the image.</param>
+        /// <param name="cancellationToken">Cancellation token for the operation.</param>
+        /// <returns>A task containing the thumbnail stream.</returns>
+        public async Task<Stream> DownloadThumbnailStreamAsync(MessageAttachmentDto attachment, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrEmpty(attachment.ThumbnailUrl)) throw new InvalidOperationException("No thumbnail URL");
+            
+            // Скачиваем миниатюру через механизм кэширования в память
+            return await this.GetCachedStreamAsync(attachment, attachment.ThumbnailUrl, cancellationToken, isThumbnail: true);
+        }
+
+
+        /// <summary>
+        /// Validates a file for upload based on type and size restrictions.
+        /// </summary>
+        /// <param name="filePath">The file path to validate.</param>
+        /// <returns>A tuple containing validation result and error message if invalid.</returns>
         public (bool IsValid, string ErrorMessage) ValidateFile(string filePath)
         {
+            if (!File.Exists(filePath)) return (false, "File not found.");
+            var fi = new FileInfo(filePath);
+            if (!FileHelper.IsAllowedFileType(fi.Name)) return (false, "File type not allowed.");
+
+            var type = FileHelper.GetAttachmentType(fi.Name);
+            if (!FileHelper.IsValidFileSize(fi.Length, type)) return (false, "File too large.");
+
+            return (true, string.Empty);
+        }
+
+
+        // --- PRIVATE HELPERS ---
+
+        /// <summary>
+        /// Ключевой метод: получает файл (из кэша или сети), загружает его в MemoryStream и возвращает.
+        /// </summary>
+
+        // --- PRIVATE HELPERS ---
+
+        /// <summary>
+        /// Ключевой метод: получает файл (из кэша или сети), загружает его в MemoryStream и возвращает.
+        /// </summary>
+        private async Task<Stream> GetCachedStreamAsync(MessageAttachmentDto attachment, string url, CancellationToken ct, bool isThumbnail)
+        {
+            var cachedPath = this.GetCachedFilePath(attachment, isThumbnail);
+
+            // 1. Если есть в кэше — читаем в память и отдаем
+            if (File.Exists(cachedPath))
+            {
+                try
+                {
+                    var ms = new MemoryStream();
+                    using (var fs = new FileStream(cachedPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        await fs.CopyToAsync(ms, ct);
+                    }
+                    ms.Position = 0; // Сбрасываем позицию, это критично для WPF!
+                    return ms;
+                }
+                catch (Exception ex)
+                {
+                    this.logger.Warning("Cache read failed, redownloading. Error: {Msg}", ex.Message);
+                    // Если не удалось прочитать кэш, пробуем скачать заново ниже
+                }
+            }
+
+            // 2. Скачиваем с сервера
+            var response = await this.httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
+            response.EnsureSuccessStatusCode();
+
+            // Сначала качаем во временный файл, чтобы не повредить кэш при обрыве
+            var tempPath = cachedPath + ".tmp";
+            using (var fs = File.Create(tempPath))
+            using (var ns = await response.Content.ReadAsStreamAsync(ct))
+            {
+                await ns.CopyToAsync(fs, ct);
+            }
+
+            // Перемещаем в кэш
+            if (File.Exists(cachedPath)) File.Delete(cachedPath);
+            File.Move(tempPath, cachedPath);
+
+            // 3. Читаем из свежего кэша в память
+            var memoryStream = new MemoryStream();
+            using (var fs = new FileStream(cachedPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                await fs.CopyToAsync(memoryStream, ct);
+            }
+            memoryStream.Position = 0;
+            return memoryStream;
+        }
+
+
+        private async Task CacheLocalFileAsync(string sourcePath, MessageAttachmentDto attachment)
+        {
             try
             {
-                if (!File.Exists(filePath))
+                var cachedPath = this.GetCachedFilePath(attachment, isThumbnail: false);
+                // Ждем немного, чтобы убедиться, что файл освобожден
+                await Task.Delay(100);
+                if (!File.Exists(cachedPath))
                 {
-                    return (false, "File does not exist.");
+                    File.Copy(sourcePath, cachedPath, true);
                 }
-
-                var fileInfo = new FileInfo(filePath);
-                var fileName = fileInfo.Name;
-                var fileSize = fileInfo.Length;
-
-                // Check if file type is allowed
-                if (!FileHelper.IsAllowedFileType(fileName))
-                {
-                    return (false, $"File type is not allowed for security reasons: {Path.GetExtension(fileName)}");
-                }
-
-                // Check file size
-                var attachmentType = FileHelper.GetAttachmentType(fileName);
-                if (!FileHelper.IsValidFileSize(fileSize, attachmentType))
-                {
-                    var maxSize = attachmentType == Shared.Enums.AttachmentType.Image
-                        ? FileHelper.MaxImageSizeBytes
-                        : FileHelper.MaxFileSizeBytes;
-
-                    return (false, $"File is too large. Maximum size: {FileHelper.FormatFileSize(maxSize)}");
-                }
-
-                return (true, string.Empty);
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Error validating file: {FilePath}", filePath);
-                return (false, $"Error validating file: {ex.Message}");
+                this.logger.Warning("Failed to background cache file: {Msg}", ex.Message);
             }
+        }
+
+
+        private string GetCachedFilePath(MessageAttachmentDto attachment, bool isThumbnail = false)
+        {
+            var ext = Path.GetExtension(attachment.FileName);
+            var name = isThumbnail ? $"thumb_{attachment.Id}{ext}" : $"{attachment.Id}{ext}";
+            return Path.Combine(this.cachePath, name);
+        }
+
+
+        private string GetUniqueFilePath(string folder, string fileName)
+        {
+            var path = Path.Combine(folder, fileName);
+            int i = 1;
+            while (File.Exists(path))
+            {
+                var name = Path.GetFileNameWithoutExtension(fileName);
+                var ext = Path.GetExtension(fileName);
+                path = Path.Combine(folder, $"{name} ({i++}){ext}");
+            }
+            return path;
         }
     }
 }

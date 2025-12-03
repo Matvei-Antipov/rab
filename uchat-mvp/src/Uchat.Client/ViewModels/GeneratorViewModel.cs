@@ -28,5 +28,23 @@ namespace Uchat.Client.ViewModels
         {
             this.navigationService.NavigateBack();
         }
+
+        /// <summary>
+        /// Command to navigate to chat view.
+        /// </summary>
+        [RelayCommand]
+        private void NavigateToChat()
+        {
+            this.navigationService.NavigateTo<ChatViewModel>();
+        }
+
+        /// <summary>
+        /// Command to navigate to settings view.
+        /// </summary>
+        [RelayCommand]
+        private void NavigateToSettings()
+        {
+            this.navigationService.NavigateTo<SettingsViewModel>();
+        }
     }
 }

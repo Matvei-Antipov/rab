@@ -38,6 +38,18 @@
             <views:SettingsView />
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type vm:FilesListViewModel}">
+            <views:FilesListView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ImagesGridViewModel}">
+            <views:ImagesGridView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ImagePreviewViewModel}">
+            <views:ImagePreviewView />
+        </DataTemplate>
+
         <Style x:Key="WinBtnStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#AAAAAA"/>

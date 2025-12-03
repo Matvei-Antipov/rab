@@ -145,5 +145,18 @@ namespace Uchat.Client.Views
             // Логика при ошибке
             // MessageBox.Show($"Media failed: {e.ErrorException.Message}");
         }
+
+        private void UserProfileOverlay_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (this.DataContext is ChatViewModel viewModel)
+            {
+                viewModel.CloseUserProfileCommand.Execute(null);
+            }
+        }
+
+        private void UserProfileModal_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

@@ -38,6 +38,9 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource NavButtonHoverBrush}"/>
                             </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource NavButtonPressedBrush}"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -137,7 +140,6 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="0,0,0,15">
-                    <Border CornerRadius="24" Background="#10FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}"/>
                     
                     <StackPanel VerticalAlignment="Top" Margin="0,20,0,0" HorizontalAlignment="Center">
@@ -148,17 +150,16 @@
                 </Grid>
 
                 <Grid Grid.Row="1">
-                    <Border CornerRadius="24" Background="#10FFFFFF"/>
                     <Border Style="{StaticResource GlassPanelBorderStyle}"/>
                     
                     <StackPanel Margin="0,20" HorizontalAlignment="Center">
-                        <Button Command="{Binding DataContext.NavigateToGeneratorCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource RoundNavButtonStyle}" Background="#5B4B6F" ToolTip="Gallery">
+                        <Button Command="{Binding NavigateToGeneratorCommand}" Style="{StaticResource RoundNavButtonStyle}" Background="#5B4B6F" ToolTip="Gallery">
                             <TextBlock Text="&#xE91B;" FontFamily="Segoe MDL2 Assets" FontSize="18"/>
                         </Button>
-                        <Button Command="{Binding DataContext.ToggleThemeCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource RoundNavButtonStyle}" Background="#8C7B30" ToolTip="Theme">
+                        <Button Command="{Binding ToggleThemeCommand}" Style="{StaticResource RoundNavButtonStyle}" Background="#8C7B30" ToolTip="Theme">
                             <TextBlock Text="{Binding DataContext.ThemeIcon, RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=&#xE708;}" FontFamily="Segoe MDL2 Assets" FontSize="18"/>
                         </Button>
-                        <Button Style="{StaticResource RoundNavButtonStyle}" Background="{DynamicResource AccentColorBrush}" ToolTip="Settings">
+                        <Button Style="{StaticResource RoundNavButtonStyle}" Background="#4E5165" ToolTip="Settings">
                             <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="18"/>
                         </Button>
                     </StackPanel>
@@ -186,7 +187,7 @@
                                     <TextBlock Text="&#xE72B;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
                                 </Button>
                                 <TextBlock Text="Settings" FontSize="28" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Light" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.7">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.8">
                                     <TextBlock Text="&#xE71B;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="ID:123456789" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center"/>
                                 </StackPanel>

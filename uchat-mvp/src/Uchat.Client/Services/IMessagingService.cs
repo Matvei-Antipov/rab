@@ -135,6 +135,14 @@ namespace Uchat.Client.Services
         Task<List<ChatDto>> GetChatsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Retrieves a specific chat by ID.
+        /// </summary>
+        /// <param name="chatId">The chat ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The chat DTO.</returns>
+        Task<ChatDto> GetChatByIdAsync(string chatId, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Creates a new chat.
         /// </summary>
         /// <param name="name">The chat name.</param>

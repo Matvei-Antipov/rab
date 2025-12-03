@@ -15,6 +15,7 @@ namespace Uchat.Client.ViewModels
     using Uchat.Client.Helpers;
     using Uchat.Client.Services;
     using Uchat.Shared.Dtos;
+    using Uchat.Shared.Enums;
 
     /// <summary>
     /// View model for the main chat view with conversation list and messages.
@@ -28,6 +29,8 @@ namespace Uchat.Client.ViewModels
         private readonly IThemeManager themeManager;
         private readonly IFileAttachmentService fileAttachmentService;
         private readonly IImageCompressionService imageCompressionService;
+        private readonly INavigationService navigationService;
+        private readonly IServiceProvider serviceProvider;
         private readonly ILogger logger;
         private readonly HashSet<string> receivedMessageIds;
         private ConversationViewModel? selectedConversation;
@@ -45,6 +48,18 @@ namespace Uchat.Client.ViewModels
         private string messageSearchText;
         private bool isSearchingMessages;
 
+        // --- USER PROFILE MODAL FIELDS ---
+        private bool isUserProfileVisible;
+        private string profileEmail;
+        private string profileUsername;
+        private int filesCount;
+        private int imagesCount;
+        private int videosCount;
+
+        // --- FILES AND IMAGES LIST FIELDS ---
+        private ObservableCollection<AttachmentViewModel> filesList;
+        private ObservableCollection<AttachmentViewModel> imagesList;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatViewModel"/> class.
         /// </summary>
@@ -56,6 +71,8 @@ namespace Uchat.Client.ViewModels
             IThemeManager themeManager,
             IFileAttachmentService fileAttachmentService,
             IImageCompressionService imageCompressionService,
+            INavigationService navigationService,
+            IServiceProvider serviceProvider,
             ILogger logger)
         {
             this.messagingService = messagingService;
@@ -65,6 +82,8 @@ namespace Uchat.Client.ViewModels
             this.themeManager = themeManager;
             this.fileAttachmentService = fileAttachmentService;
             this.imageCompressionService = imageCompressionService;
+            this.navigationService = navigationService;
+            this.serviceProvider = serviceProvider;
             this.logger = logger;
             this.receivedMessageIds = new HashSet<string>();
             this.Title = "Uchat - Messages";
@@ -73,6 +92,14 @@ namespace Uchat.Client.ViewModels
             // Initialize search fields to avoid CS8618
             this.chatSearchText = string.Empty;
             this.messageSearchText = string.Empty;
+            
+            // Initialize profile fields
+            this.profileEmail = string.Empty;
+            this.profileUsername = string.Empty;
+
+            // Initialize files and images lists
+            this.filesList = new ObservableCollection<AttachmentViewModel>();
+            this.imagesList = new ObservableCollection<AttachmentViewModel>();
 
             this.pendingAttachments = new ObservableCollection<AttachmentViewModel>();
             this.Conversations = new ObservableCollection<ConversationViewModel>();
@@ -161,6 +188,70 @@ namespace Uchat.Client.ViewModels
             get => this.isSearchingMessages;
             set => this.SetProperty(ref this.isSearchingMessages, value);
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user profile modal is visible.
+        /// </summary>
+        public bool IsUserProfileVisible
+        {
+            get => this.isUserProfileVisible;
+            set => this.SetProperty(ref this.isUserProfileVisible, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the profile email of the selected conversation user.
+        /// </summary>
+        public string ProfileEmail
+        {
+            get => this.profileEmail;
+            set => this.SetProperty(ref this.profileEmail, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the profile username of the selected conversation user.
+        /// </summary>
+        public string ProfileUsername
+        {
+            get => this.profileUsername;
+            set => this.SetProperty(ref this.profileUsername, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the number of files in the current chat.
+        /// </summary>
+        public int FilesCount
+        {
+            get => this.filesCount;
+            set => this.SetProperty(ref this.filesCount, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the number of images in the current chat.
+        /// </summary>
+        public int ImagesCount
+        {
+            get => this.imagesCount;
+            set => this.SetProperty(ref this.imagesCount, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the number of videos in the current chat.
+        /// </summary>
+        public int VideosCount
+        {
+            get => this.videosCount;
+            set => this.SetProperty(ref this.videosCount, value);
+        }
+
+        /// <summary>
+        /// Gets the files list collection.
+        /// </summary>
+        public ObservableCollection<AttachmentViewModel> FilesList => this.filesList;
+
+        /// <summary>
+        /// Gets the images list collection.
+        /// </summary>
+        public ObservableCollection<AttachmentViewModel> ImagesList => this.imagesList;
 
         /// <summary>
         /// Gets or sets the selected conversation.
@@ -418,6 +509,73 @@ namespace Uchat.Client.ViewModels
         }
 
         // --- END SEARCH LOGIC ---
+
+        // --- USER PROFILE MODAL COMMANDS ---
+        [RelayCommand]
+        private void OpenUserProfile()
+        {
+            if (this.SelectedConversation != null)
+            {
+                if (!this.IsUserProfileVisible)
+                {
+                    this.UpdateProfileData();
+                    this.CalculateProfileStatistics();
+                    this.PopulateProfileImages();
+                    this.PopulateProfileFiles();
+                    this.IsUserProfileVisible = true;
+                }
+                else
+                {
+                    this.IsUserProfileVisible = false;
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void CloseUserProfile()
+        {
+            this.IsUserProfileVisible = false;
+        }
+
+        // --- END USER PROFILE MODAL ---
+
+        // --- FILES AND IMAGES LIST COMMANDS ---
+        [RelayCommand]
+        private void OpenFilesList()
+        {
+            if (this.SelectedConversation == null)
+            {
+                return;
+            }
+
+            this.PopulateFilesList();
+            
+            var filesListViewModel = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<FilesListViewModel>(
+                this.serviceProvider);
+            filesListViewModel.SetFiles(this.filesList, this.SelectedConversation.Name ?? "Chat");
+            
+            this.navigationService.NavigateTo<FilesListViewModel>();
+        }
+
+        [RelayCommand]
+        private void OpenImagesGrid()
+        {
+            if (this.SelectedConversation == null)
+            {
+                return;
+            }
+
+            this.PopulateImagesList();
+            
+            var imagesGridViewModel = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ImagesGridViewModel>(
+                this.serviceProvider);
+            imagesGridViewModel.SetImages(this.imagesList, this.SelectedConversation.Name ?? "Chat");
+            
+            this.navigationService.NavigateTo<ImagesGridViewModel>();
+        }
+
+        // --- END FILES AND IMAGES LIST ---
+
         [RelayCommand(CanExecute = nameof(CanSendMessage))]
         private async Task SendMessageAsync()
         {
@@ -568,7 +726,7 @@ namespace Uchat.Client.ViewModels
         [RelayCommand]
         private void ViewImage(AttachmentViewModel attachment)
         {
-            if (attachment.AttachmentDto == null || !attachment.IsImage)
+            if (attachment?.AttachmentDto == null || !attachment.IsImage)
             {
                 return;
             }
@@ -581,13 +739,35 @@ namespace Uchat.Client.ViewModels
                     .Select(a => a.AttachmentDto!)
                     .ToList();
 
+                if (allImages.Count == 0)
+                {
+                    this.errorHandlingService.ShowError("No images found");
+                    return;
+                }
+
                 var currentIndex = allImages.FindIndex(img => img.Id == attachment.AttachmentDto.Id);
-                var imageViewModel = new ImageViewModel(allImages, Math.Max(0, currentIndex), this.fileAttachmentService);
-                new Views.ImageViewerDialog(imageViewModel) { Owner = Application.Current.MainWindow }.ShowDialog();
+                if (currentIndex < 0)
+                {
+                    currentIndex = 0;
+                }
+
+                // Use ImagePreviewViewModel and navigate to ImagePreviewView
+                var imagePreviewViewModel = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ImagePreviewViewModel>(
+                    this.serviceProvider);
+                if (imagePreviewViewModel != null)
+                {
+                    imagePreviewViewModel.SetImages(allImages, currentIndex);
+                    this.navigationService.NavigateTo<ImagePreviewViewModel>();
+                }
+                else
+                {
+                    this.errorHandlingService.ShowError("Failed to initialize image preview");
+                }
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Failed to view image");
+                this.logger.Error(ex, "Failed to view image: {Error}", ex.Message);
+                this.errorHandlingService.ShowError($"Failed to open image preview: {ex.Message}");
             }
         }
 
@@ -763,7 +943,7 @@ namespace Uchat.Client.ViewModels
                     try
                     {
                         var messages = await this.messagingService.GetMessageHistoryAsync(chat.Id, limit: 1);
-                        conversation.LastMessagePreview = messages.Any() ? this.TruncateContent(messages.Last().Content, 50) : "No messages";
+                        conversation.LastMessagePreview = messages.Any() ? this.GetMessagePreview(messages.Last()) : "No messages";
                     }
                     catch
                     {
@@ -838,8 +1018,11 @@ namespace Uchat.Client.ViewModels
 
                 if (messages.Any())
                 {
-                    this.SelectedConversation.LastMessagePreview = this.TruncateContent(messages.Last().Content, 50);
+                    var lastMessage = messages.Last();
+                    this.SelectedConversation.LastMessagePreview = this.GetMessagePreview(lastMessage);
                 }
+
+                this.CalculateProfileStatistics();
             }
             catch (Exception ex)
             {
@@ -848,6 +1031,138 @@ namespace Uchat.Client.ViewModels
             finally
             {
                 this.IsLoadingMessages = false;
+            }
+        }
+
+        private void CalculateProfileStatistics()
+        {
+            var messageViewModels = this.GetMessageViewModels();
+            var allAttachments = messageViewModels
+                .SelectMany(m => m.Attachments)
+                .ToList();
+
+            this.FilesCount = allAttachments.Count(a => a.AttachmentType == AttachmentType.Document || 
+                                                        a.AttachmentType == AttachmentType.Archive || 
+                                                        a.AttachmentType == AttachmentType.Code ||
+                                                        a.AttachmentType == AttachmentType.Audio);
+            this.ImagesCount = allAttachments.Count(a => a.AttachmentType == AttachmentType.Image);
+            this.VideosCount = allAttachments.Count(a => a.AttachmentType == AttachmentType.Video);
+        }
+
+        private void PopulateFilesList()
+        {
+            var messageViewModels = this.GetMessageViewModels();
+            var files = messageViewModels
+                .SelectMany(m => m.Attachments)
+                .Where(a => a.AttachmentType == AttachmentType.Document || 
+                           a.AttachmentType == AttachmentType.Archive || 
+                           a.AttachmentType == AttachmentType.Code ||
+                           a.AttachmentType == AttachmentType.Audio)
+                .OrderByDescending(a => a.AttachmentDto?.UploadedAt)
+                .ToList();
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.filesList.Clear();
+                foreach (var file in files)
+                {
+                    this.filesList.Add(file);
+                }
+            });
+        }
+
+        private void PopulateImagesList()
+        {
+            var messageViewModels = this.GetMessageViewModels();
+            var images = messageViewModels
+                .SelectMany(m => m.Attachments)
+                .Where(a => a.AttachmentType == AttachmentType.Image)
+                .OrderByDescending(a => a.AttachmentDto?.UploadedAt)
+                .ToList();
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.imagesList.Clear();
+                foreach (var image in images)
+                {
+                    this.imagesList.Add(image);
+                }
+            });
+        }
+
+        private async void PopulateProfileImages()
+        {
+            // Populate images list for profile display
+            this.PopulateImagesList();
+            
+            // Initialize thumbnails for profile images (first 6 for preview)
+            foreach (var image in this.imagesList.Take(6))
+            {
+                if (image.IsImage)
+                {
+                    try
+                    {
+                        await image.InitializeAsync();
+                    }
+                    catch
+                    {
+                        // Ignore errors during initialization
+                    }
+                }
+            }
+        }
+
+        private async void PopulateProfileFiles()
+        {
+            // Populate files list for profile display
+            this.PopulateFilesList();
+            
+            // Initialize thumbnails for image files in profile (first 6 for preview)
+            foreach (var file in this.filesList.Take(6))
+            {
+                if (file.IsImage)
+                {
+                    try
+                    {
+                        await file.InitializeAsync();
+                    }
+                    catch
+                    {
+                        // Ignore errors during initialization
+                    }
+                }
+            }
+        }
+
+        private async void UpdateProfileData()
+        {
+            if (this.SelectedConversation == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var chat = await this.messagingService.GetChatByIdAsync(this.SelectedConversation.Id);
+                var currentUserId = this.authenticationService.CurrentUser?.Id ?? string.Empty;
+                
+                var otherUser = chat.Participants.FirstOrDefault(p => p.Id != currentUserId);
+                if (otherUser != null)
+                {
+                    this.ProfileEmail = otherUser.Email;
+                    this.ProfileUsername = otherUser.Username;
+                }
+                else
+                {
+                    this.ProfileEmail = string.Empty;
+                    this.ProfileUsername = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error(ex, "Failed to load profile data");
+                this.ProfileEmail = string.Empty;
+                this.ProfileUsername = string.Empty;
             }
         }
 
@@ -929,7 +1244,7 @@ namespace Uchat.Client.ViewModels
                 var targetConversation = this.Conversations.FirstOrDefault(c => c.Id == messageDto.ChatId);
                 if (targetConversation != null)
                 {
-                    targetConversation.LastMessagePreview = this.TruncateContent(messageDto.Content, 50);
+                    targetConversation.LastMessagePreview = this.GetMessagePreview(messageDto);
                     targetConversation.LastMessageAt = messageDto.CreatedAt;
                 }
             });
@@ -1013,6 +1328,33 @@ namespace Uchat.Client.ViewModels
 
         private void OnUserTyping(object? sender, string userId)
         {
+        }
+
+        private string GetMessagePreview(MessageDto message)
+        {
+            // If message has attachments, show attachment type
+            if (message.Attachments != null && message.Attachments.Any())
+            {
+                var firstAttachment = message.Attachments.First();
+                return firstAttachment.AttachmentType switch
+                {
+                    AttachmentType.Image => "image",
+                    AttachmentType.Video => "video",
+                    AttachmentType.Audio => "audio",
+                    AttachmentType.Document => "file",
+                    AttachmentType.Archive => "file",
+                    AttachmentType.Code => "file",
+                    _ => "file",
+                };
+            }
+
+            // If message has text content, show truncated text
+            if (!string.IsNullOrWhiteSpace(message.Content))
+            {
+                return this.TruncateContent(message.Content, 50);
+            }
+
+            return string.Empty;
         }
 
         private string TruncateContent(string content, int maxLength)

@@ -2,6 +2,7 @@ namespace Uchat.Client.ViewModels
 {
     using System;
     using System.IO;
+    using System.Threading.Tasks;
     using System.Windows.Media.Imaging;
     using CommunityToolkit.Mvvm.ComponentModel;
     using Serilog;
@@ -66,11 +67,10 @@ namespace Uchat.Client.ViewModels
             this.AttachmentDto = dto;
             this.fileAttachmentService = fileAttachmentService;
 
-            // Load thumbnail for images from server
-            // Always try to load thumbnail for images, even if ThumbnailUrl is not set (will fallback to full image)
+            // Initialize asynchronously - don't block constructor
             if (this.IsImage && fileAttachmentService != null)
             {
-                this.LoadThumbnailFromService(dto);
+                _ = this.InitializeAsync();
             }
         }
 
@@ -236,10 +236,35 @@ namespace Uchat.Client.ViewModels
         }
 
         /// <summary>
+        /// Asynchronously initializes the attachment view model.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task InitializeAsync()
+        {
+            if (this.AttachmentDto != null && this.IsImage && this.fileAttachmentService != null)
+            {
+                await this.LoadThumbnailFromServiceAsync(this.AttachmentDto);
+            }
+        }
+
+        /// <summary>
+        /// Reloads the thumbnail image for this attachment.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task ReloadThumbnailAsync()
+        {
+            if (this.AttachmentDto != null && this.IsImage && this.fileAttachmentService != null)
+            {
+                await this.LoadThumbnailFromServiceAsync(this.AttachmentDto);
+            }
+        }
+
+        /// <summary>
         /// Loads a thumbnail image from server using file attachment service (async).
         /// </summary>
         /// <param name="attachment">The attachment DTO.</param>
-        private async void LoadThumbnailFromService(MessageAttachmentDto attachment)
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task LoadThumbnailFromServiceAsync(MessageAttachmentDto attachment)
         {
             if (this.fileAttachmentService == null)
             {

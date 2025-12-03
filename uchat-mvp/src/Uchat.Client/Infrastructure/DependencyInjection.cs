@@ -122,6 +122,9 @@ namespace Uchat.Client.Infrastructure
             services.AddTransient<ChatViewModel>();
             services.AddTransient<GeneratorViewModel>();
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<FilesListViewModel>();
+            services.AddTransient<ImagesGridViewModel>();
+            services.AddTransient<ImagePreviewViewModel>();
 
             return services;
         }
@@ -140,6 +143,9 @@ namespace Uchat.Client.Infrastructure
             services.AddTransient<ChatView>();
             services.AddTransient<GeneratorView>();
             services.AddTransient<SettingsView>();
+            services.AddTransient<FilesListView>();
+            services.AddTransient<ImagesGridView>();
+            services.AddTransient<ImagePreviewView>();
 
             return services;
         }

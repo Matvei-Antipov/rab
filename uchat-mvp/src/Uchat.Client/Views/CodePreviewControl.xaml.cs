@@ -126,24 +126,24 @@ namespace Uchat.Client.Views
                         break;
                     case "String":
                     case "Char":
-                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(244, 112, 103));
+                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(206, 145, 120));
                         break;
                     case "NumberLiteral":
                     case "Number":
-                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(107, 182, 255));
+                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(181, 206, 168));
                         break;
                     case "Keywords":
                     case "Keyword":
-                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(244, 112, 103));
+                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(197, 134, 192));
                         break;
                     case "MethodCall":
                     case "MethodName":
-                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(246, 157, 81));
+                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(220, 220, 170));
                         break;
                     case "TypeKeywords":
                     case "ReferenceTypes":
                     case "ValueTypes":
-                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(246, 157, 81));
+                        customColor.Foreground = new SimpleHighlightingBrush(Color.FromRgb(78, 201, 176));
                         break;
                     default:
                         customColor.Foreground = color.Foreground;

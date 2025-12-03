@@ -424,6 +424,29 @@ namespace Uchat.Client.Services
         }
 
         /// <inheritdoc/>
+        public async Task<ChatDto> GetChatByIdAsync(string chatId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await this.httpClient.GetAsync($"/api/chats/{chatId}", cancellationToken);
+                response.EnsureSuccessStatusCode();
+
+                var chat = await response.Content.ReadFromJsonAsync<ChatDto>(cancellationToken);
+                if (chat == null)
+                {
+                    throw new InvalidOperationException($"Chat with ID {chatId} not found");
+                }
+
+                return chat;
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error(ex, "Failed to retrieve chat {ChatId}", chatId);
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
         public async Task<ChatDto> CreateChatAsync(string name, List<string> participantIds, CancellationToken cancellationToken = default)
         {
             try

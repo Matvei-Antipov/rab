@@ -1,0 +1,190 @@
+<UserControl x:Class="Uchat.Client.Views.ImagePreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="1100"
+             FontFamily="Segoe UI"
+             UseLayoutRounding="True"
+             TextOptions.TextFormattingMode="Display">
+
+    <UserControl.Resources>
+        <Style x:Key="NavCircleButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#60000000"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" CornerRadius="25" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#80000000"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TopBarButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="42"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#60000000"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" CornerRadius="21" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#80000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#E5000000">
+        <!-- Top Bar -->
+        <Grid VerticalAlignment="Top" Height="70">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#80000000" Offset="0"/>
+                    <GradientStop Color="#00000000" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid Margin="30,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Back Button -->
+                <Button Grid.Column="0"
+                        Style="{StaticResource TopBarButtonStyle}"
+                        Command="{Binding NavigateBackCommand}">
+                    <TextBlock Text="&#xE72B;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+                </Button>
+
+                <!-- Image Counter -->
+                <TextBlock Grid.Column="1"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           Foreground="{DynamicResource TextPrimaryBrush}">
+                    <Run Text="{Binding CurrentImageNumber, Mode=OneWay}"/>
+                    <Run Text="of"/>
+                    <Run Text="{Binding TotalImages, Mode=OneWay}"/>
+                </TextBlock>
+
+                <!-- Save As Button -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Style="{StaticResource TopBarButtonStyle}"
+                            Command="{Binding SaveCurrentImageAsCommand}"
+                            ToolTip="Save As">
+                        <TextBlock Text="&#xE792;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+                    </Button>
+
+                    <!-- Download Button -->
+                    <Button Style="{StaticResource TopBarButtonStyle}"
+                            Command="{Binding DownloadCurrentImageCommand}"
+                            ToolTip="Download">
+                        <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <!-- Main Content Area -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Previous Button -->
+            <Button Grid.Column="0"
+                    Style="{StaticResource NavCircleButtonStyle}"
+                    Command="{Binding PreviousImageCommand}"
+                    VerticalAlignment="Center"
+                    Margin="30,0">
+                <TextBlock Text="&#xE76B;" FontFamily="Segoe MDL2 Assets" FontSize="22"/>
+            </Button>
+
+            <!-- Image Display Area -->
+            <Viewbox Grid.Column="1"
+                     Stretch="Uniform"
+                     Margin="20">
+                <Grid>
+                    <!-- Loading indicator -->
+                    <TextBlock Text="Loading image..."
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               FontSize="16"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <!-- Image -->
+                    <Image Source="{Binding CurrentImageSource}"
+                           MaxWidth="1200"
+                           MaxHeight="800"
+                           Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                </Grid>
+            </Viewbox>
+
+            <!-- Next Button -->
+            <Button Grid.Column="2"
+                    Style="{StaticResource NavCircleButtonStyle}"
+                    Command="{Binding NextImageCommand}"
+                    VerticalAlignment="Center"
+                    Margin="30,0">
+                <TextBlock Text="&#xE76C;" FontFamily="Segoe MDL2 Assets" FontSize="22"/>
+            </Button>
+        </Grid>
+
+        <!-- Bottom Info Bar -->
+        <Grid VerticalAlignment="Bottom" Height="80">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#00000000" Offset="0"/>
+                    <GradientStop Color="#80000000" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CurrentImage.FileName}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           HorizontalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           MaxWidth="600"/>
+                <TextBlock Text="{Binding CurrentImage.FormattedSize}"
+                           FontSize="13"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
