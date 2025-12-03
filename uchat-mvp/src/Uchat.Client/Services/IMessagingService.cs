@@ -150,5 +150,21 @@ namespace Uchat.Client.Services
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The created chat DTO.</returns>
         Task<ChatDto> CreateChatAsync(string name, List<string> participantIds, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Blocks a user.
+        /// </summary>
+        /// <param name="userId">The user ID to block.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task BlockUserAsync(string userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Deletes a chat.
+        /// </summary>
+        /// <param name="chatId">The chat ID to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task DeleteChatAsync(string chatId, CancellationToken cancellationToken = default);
     }
 }

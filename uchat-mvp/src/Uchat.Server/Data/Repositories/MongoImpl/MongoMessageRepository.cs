@@ -115,6 +115,13 @@ namespace Uchat.Server.Data.Repositories.MongoImpl
             return dataMessages.Select(MapToShared).Where(m => m != null).Cast<SharedMessage>();
         }
 
+        /// <inheritdoc/>
+        public async Task DeleteAllByChatIdAsync(string chatId, CancellationToken cancellationToken = default)
+        {
+            var filter = Builders<DataMessage>.Filter.Eq(x => x.ChatId, chatId);
+            await this.collection.DeleteManyAsync(filter, cancellationToken);
+        }
+
         private static SharedMessage? MapToShared(DataMessage? dataMessage)
         {
             if (dataMessage == null)

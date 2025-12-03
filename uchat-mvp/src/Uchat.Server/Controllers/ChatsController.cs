@@ -225,5 +225,41 @@ namespace Uchat.Server.Controllers
                 return this.BadRequest(new { error = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Deletes a chat.
+        /// </summary>
+        /// <param name="id">The chat ID to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Success response.</returns>
+        [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteChat(string id, CancellationToken cancellationToken)
+        {
+            var userId = this.HttpContext.Items["UserId"] as string;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return this.Unauthorized();
+            }
+
+            var chat = await this.chatService.GetChatByIdAsync(id, cancellationToken);
+            if (chat == null)
+            {
+                return this.NotFound(new { error = "Chat not found." });
+            }
+
+            if (!chat.ParticipantIds.Contains(userId))
+            {
+                return this.Forbid();
+            }
+
+            await this.chatService.DeleteChatAsync(id, cancellationToken);
+            this.logger.Information("Chat {ChatId} deleted by user {UserId}", id, userId);
+
+            return this.Ok(new { message = "Chat deleted successfully." });
+        }
     }
 }

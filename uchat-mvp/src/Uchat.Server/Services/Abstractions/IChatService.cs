@@ -34,5 +34,13 @@ namespace Uchat.Server.Services.Abstractions
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The created chat DTO with participant details.</returns>
         Task<ChatDto> CreateChatAsync(CreateChatRequest request, string creatorUserId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Deletes a chat.
+        /// </summary>
+        /// <param name="chatId">The chat ID to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task DeleteChatAsync(string chatId, CancellationToken cancellationToken = default);
     }
 }
