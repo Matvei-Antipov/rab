@@ -973,6 +973,57 @@ namespace Uchat.Client.Services
             }
         }
 
+        /// <inheritdoc/>
+        public async Task BlockUserAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await this.httpClient.PostAsync(
+                    $"/api/users/{userId}/block",
+                    null,
+                    cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                    this.logger.Error("Failed to block user {UserId}: {StatusCode} - {Error}", userId, response.StatusCode, errorContent);
+                    throw new ApiException($"Failed to block user: {response.StatusCode}");
+                }
+
+                this.logger.Information("User {UserId} blocked successfully", userId);
+            }
+            catch (Exception ex) when (ex is not ApiException)
+            {
+                this.logger.Error(ex, "Error blocking user {UserId}", userId);
+                throw new ApiException("Failed to block user", ex);
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteChatAsync(string chatId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await this.httpClient.DeleteAsync(
+                    $"/api/chats/{chatId}",
+                    cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                    this.logger.Error("Failed to delete chat {ChatId}: {StatusCode} - {Error}", chatId, response.StatusCode, errorContent);
+                    throw new ApiException($"Failed to delete chat: {response.StatusCode}");
+                }
+
+                this.logger.Information("Chat {ChatId} deleted successfully", chatId);
+            }
+            catch (Exception ex) when (ex is not ApiException)
+            {
+                this.logger.Error(ex, "Error deleting chat {ChatId}", chatId);
+                throw new ApiException("Failed to delete chat", ex);
+            }
+        }
+
         private class TypingIndicatorPayload
         {
             public string UserId { get; set; } = string.Empty;
