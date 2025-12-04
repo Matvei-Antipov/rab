@@ -1,4 +1,4 @@
-<UserControl x:Class="Uchat.Client.Views.ChatView"
+﻿<UserControl x:Class="Uchat.Client.Views.ChatView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -558,7 +558,13 @@
             <Border Width="650" Style="{StaticResource GlassPanelBorderStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" MouseDown="UserProfileModal_MouseDown">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
+                        <Grid.Resources>
+                            <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+                            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+                            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanConverter"/>
+                        </Grid.Resources>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -685,80 +691,10 @@
 
                         <Border Grid.Row="9" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
-                        <!-- Images Preview -->
-                        <StackPanel Grid.Row="10" Margin="35,20" Visibility="{Binding ImagesCount, Converter={StaticResource CountToVisibilityConverter}}">
-                            <TextBlock Text="Recent Images" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,10"/>
-                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
-                                <ItemsControl ItemsSource="{Binding ImagesList}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Width="80" Height="80" Margin="0,0,10,0" CornerRadius="8" 
-                                                    BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1"
-                                                    Cursor="Hand" ToolTip="{Binding FileName}">
-                                                <Button Command="{Binding DataContext.ViewImageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                                        CommandParameter="{Binding}" 
-                                                        Background="Transparent" BorderThickness="0" Padding="0">
-                                                    <Grid>
-                                                        <Image Source="{Binding ThumbnailImage}" Stretch="UniformToFill" 
-                                                               Visibility="{Binding HasThumbnail, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                            <Image.Clip>
-                                                                <RectangleGeometry Rect="0,0,80,80" RadiusX="8" RadiusY="8"/>
-                                                            </Image.Clip>
-                                                        </Image>
-                                                        <Border Background="#20000000" Visibility="{Binding HasThumbnail, Converter={StaticResource InverseBooleanConverter}}">
-                                                            <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="30" 
-                                                                       Foreground="{DynamicResource TextTertiaryBrush}" 
-                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </Grid>
-                                                </Button>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
-                        </StackPanel>
-
-                        <!-- Files Preview -->
-                        <StackPanel Grid.Row="11" Margin="35,20" Visibility="{Binding FilesCount, Converter={StaticResource CountToVisibilityConverter}}">
-                            <TextBlock Text="Recent Files" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,10"/>
-                            <ItemsControl ItemsSource="{Binding FilesList}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Margin="0,0,0,8" Padding="10" Background="{DynamicResource GlassPanelBackgroundBrush}" 
-                                                CornerRadius="8" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1"
-                                                Cursor="Hand" ToolTip="{Binding FileName}">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" 
-                                                           FontSize="20" Foreground="{DynamicResource IconBrush}" 
-                                                           Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                <StackPanel Grid.Column="1">
-                                                    <TextBlock Text="{Binding FileName}" Foreground="{DynamicResource TextPrimaryBrush}" 
-                                                               FontSize="12" TextTrimming="CharacterEllipsis"/>
-                                                    <TextBlock Text="{Binding FileSizeFormatted}" Foreground="{DynamicResource TextSecondaryBrush}" 
-                                                               FontSize="10" Margin="0,2,0,0"/>
-                                                </StackPanel>
-                                                <Button Grid.ColumnSpan="2" Command="{Binding DataContext.OpenAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                                        CommandParameter="{Binding}" Background="Transparent" BorderThickness="0"/>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
 
                         <Border Grid.Row="12" Height="1" Background="{DynamicResource SeparatorBrush}"/>
 
-                        <StackPanel Grid.Row="12" Margin="35,25,35,35">
+                        <StackPanel Grid.Row="13" Margin="35,25,35,35">
                             <Grid HorizontalAlignment="Center" Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -768,7 +704,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 
-                                <Button Grid.Column="0" Command="{Binding ShareContactCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
+                                <Button Grid.Column="0" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
                                     <StackPanel>
                                         <TextBlock Text="&#xE72D;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Share" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0"/>
@@ -787,7 +723,7 @@
                                     </Button.Template>
                                 </Button>
                                 
-                                <Button Grid.Column="2" Command="{Binding BlockUserCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
+                                <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
                                     <StackPanel>
                                         <TextBlock Text="&#xE25B;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource ErrorColorBrush}" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Block" Foreground="{DynamicResource ErrorColorBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0"/>
@@ -806,7 +742,7 @@
                                     </Button.Template>
                                 </Button>
                                 
-                                <Button Grid.Column="4" Command="{Binding DeleteChatCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
+                                <Button Grid.Column="4" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="15,8">
                                     <StackPanel>
                                         <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource ErrorColorBrush}" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Delete" Foreground="{DynamicResource ErrorColorBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0"/>

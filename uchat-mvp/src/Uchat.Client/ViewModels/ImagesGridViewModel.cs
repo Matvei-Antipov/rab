@@ -102,15 +102,18 @@ namespace Uchat.Client.ViewModels
             {
                 var imagePreviewViewModel = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ImagePreviewViewModel>(
                     this.serviceProvider);
-                
-                var allImageDtos = this.imagesList
+
+                var allImageItems = this.imagesList
                     .Where(img => img.AttachmentDto != null)
-                    .Select(img => img.AttachmentDto!)
+                    .Select(img => new ImagePreviewItem(
+                        img.AttachmentDto!,
+                        this.ConversationName,
+                        img.AttachmentDto!.UploadedAt))
                     .ToList();
-                
-                var currentIndex = allImageDtos.FindIndex(img => img.Id == image.AttachmentDto.Id);
-                imagePreviewViewModel.SetImages(allImageDtos, Math.Max(0, currentIndex));
-                
+
+                var currentIndex = allImageItems.FindIndex(img => img.Attachment.Id == image.AttachmentDto.Id);
+                imagePreviewViewModel.SetImages(allImageItems, Math.Max(0, currentIndex));
+
                 this.navigationService.NavigateTo<ImagePreviewViewModel>();
             }
             catch (Exception ex)

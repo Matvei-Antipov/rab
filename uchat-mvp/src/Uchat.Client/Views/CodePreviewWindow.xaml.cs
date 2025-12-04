@@ -23,14 +23,6 @@ namespace Uchat.Client.Views
             this.KeyDown += this.CodePreviewWindow_KeyDown;
         }
 
-        private void CodePreviewWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Escape)
-            {
-                this.Close();
-            }
-        }
-
         /// <summary>
         /// Loads code content into the preview window.
         /// </summary>
@@ -42,6 +34,14 @@ namespace Uchat.Client.Views
             this.fileName = fileName;
             this.Title = $"Code Preview - {fileName}";
             this.CodePreview.LoadCode(code, fileName);
+        }
+
+        private void CodePreviewWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                this.Close();
+            }
         }
 
         private void CopyButton_Click(object sender, RoutedEventArgs e)

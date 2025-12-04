@@ -16,14 +16,18 @@
     <sys:Boolean x:Key="True">True</sys:Boolean>
     <sys:Boolean x:Key="False">False</sys:Boolean>
 
-    <!-- Null to Visibility Converter - placeholder -->
-    <BooleanToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    <!-- Null to Visibility Converter -->
+    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
 
-    <!-- Inverse Boolean Converter - placeholder -->
-    <BooleanToVisibilityConverter x:Key="InverseBooleanConverter"/>
+    <!-- Inverse Boolean to Visibility Converter -->
+    <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanConverter"/>
 
-    <!-- Other converters - placeholders -->
-    <BooleanToVisibilityConverter x:Key="NullToBooleanConverter"/>
-    <BooleanToVisibilityConverter x:Key="BooleanToAlignmentConverter"/>
-    <BooleanToVisibilityConverter x:Key="BooleanToOpacityConverter"/>
+    <!-- Null to Boolean Converter -->
+    <converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
+
+    <!-- Boolean to Alignment Converter -->
+    <converters:BooleanToAlignmentConverter x:Key="BooleanToAlignmentConverter"/>
+
+    <!-- Boolean to Opacity Converter -->
+    <converters:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
 </ResourceDictionary>

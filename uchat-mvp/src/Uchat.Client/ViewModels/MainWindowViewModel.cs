@@ -28,6 +28,11 @@ namespace Uchat.Client.ViewModels
         [ObservableProperty]
         private string themeIcon = MoonIcon;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindowViewModel"/> class.
+        /// </summary>
+        /// <param name="themeManager">The theme manager service.</param>
+        /// <param name="navigationService">The navigation service.</param>
         public MainWindowViewModel(IThemeManager themeManager, INavigationService navigationService)
         {
             this.themeManager = themeManager;
@@ -46,9 +51,24 @@ namespace Uchat.Client.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets the command to toggle the theme.
+        /// </summary>
         public ICommand ToggleThemeCommand { get; }
+
+        /// <summary>
+        /// Gets the command to navigate to the chat view.
+        /// </summary>
         public ICommand NavigateToChatCommand { get; }
+
+        /// <summary>
+        /// Gets the command to navigate to the generator view.
+        /// </summary>
         public ICommand NavigateToGeneratorCommand { get; }
+
+        /// <summary>
+        /// Gets the command to navigate to the settings view.
+        /// </summary>
         public ICommand NavigateToSettingsCommand { get; }
 
         private void ToggleTheme()

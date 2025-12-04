@@ -35,6 +35,15 @@
     <SolidColorBrush x:Key="ErrorColorBrush" Color="#FF6B6B"/>
     <SolidColorBrush x:Key="CodePreviewBrush" Color="#007ACC"/>
 
+    <!-- Welcome View Colors -->
+    <SolidColorBrush x:Key="BgDarkBrush" Color="#111118"/>
+    <SolidColorBrush x:Key="BlobPurpleBrush" Color="#422F91"/>
+    <SolidColorBrush x:Key="TextWhiteBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="TextBeigeBrush" Color="#DBCFB6"/>
+    <SolidColorBrush x:Key="TextGreyBrush" Color="#8F8F9E"/>
+    <SolidColorBrush x:Key="ButtonBorderBrush" Color="#3A3A45"/>
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#2A2A35"/>
+
     <!-- Profile Modal Colors -->
     <SolidColorBrush x:Key="ProfileOverlayBrush" Color="#D9000000"/>
     <LinearGradientBrush x:Key="ProfileModalBackgroundBrush" StartPoint="0,0" EndPoint="0,1">

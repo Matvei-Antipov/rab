@@ -75,33 +75,5 @@ namespace Uchat.Server.Controllers
 
             return this.Ok(userDtos);
         }
-
-        /// <summary>
-        /// Blocks a user.
-        /// </summary>
-        /// <param name="id">The user ID to block.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Success response.</returns>
-        [HttpPost("{id}/block")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> BlockUser(string id, CancellationToken cancellationToken)
-        {
-            var userId = this.HttpContext.Items["UserId"] as string;
-            if (string.IsNullOrEmpty(userId))
-            {
-                return this.Unauthorized();
-            }
-
-            var userToBlock = await this.userRepository.GetByIdAsync(id, cancellationToken);
-            if (userToBlock == null)
-            {
-                return this.NotFound(new { error = "User not found." });
-            }
-
-            this.logger.Information("User {UserId} blocked user {BlockedUserId}", userId, id);
-            return this.Ok(new { message = "User blocked successfully." });
-        }
     }
 }

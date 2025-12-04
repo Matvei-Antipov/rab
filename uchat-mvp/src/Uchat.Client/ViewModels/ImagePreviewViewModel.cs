@@ -10,6 +10,8 @@ namespace Uchat.Client.ViewModels
     using Uchat.Client.Services;
     using Uchat.Shared.Dtos;
 
+
+
     /// <summary>
     /// View model for the image preview view.
     /// </summary>
@@ -19,9 +21,9 @@ namespace Uchat.Client.ViewModels
         private readonly IFileAttachmentService fileAttachmentService;
         private readonly IErrorHandlingService errorHandlingService;
         private readonly ILogger logger;
-        private List<MessageAttachmentDto> allImages;
+        private List<ImagePreviewItem> allImages;
         private int currentIndex;
-        private MessageAttachmentDto? currentImage;
+        private ImagePreviewItem? currentItem;
         private System.Windows.Media.Imaging.BitmapImage? currentImageSource;
         private bool isLoading;
 
@@ -39,18 +41,40 @@ namespace Uchat.Client.ViewModels
             this.errorHandlingService = errorHandlingService;
             this.logger = logger;
             this.Title = "Image Preview";
-            this.allImages = new List<MessageAttachmentDto>();
+            this.allImages = new List<ImagePreviewItem>();
             this.currentIndex = 0;
         }
 
         /// <summary>
-        /// Gets the current image.
+        /// Gets the current image item.
         /// </summary>
-        public MessageAttachmentDto? CurrentImage
+        public ImagePreviewItem? CurrentItem
         {
-            get => this.currentImage;
-            private set => this.SetProperty(ref this.currentImage, value);
+            get => this.currentItem;
+            private set
+            {
+                if (this.SetProperty(ref this.currentItem, value))
+                {
+                    this.OnPropertyChanged(nameof(this.CurrentImage));
+                    this.OnPropertyChanged(nameof(this.SenderName));
+                }
+            }
         }
+
+        /// <summary>
+        /// Gets the current attachment DTO.
+        /// </summary>
+        public MessageAttachmentDto? CurrentImage => this.CurrentItem?.Attachment;
+
+        /// <summary>
+        /// Gets the sender name of the current image.
+        /// </summary>
+        public string SenderName => this.CurrentItem?.SenderName ?? string.Empty;
+
+        /// <summary>
+        /// Gets the formatted timestamp of the current image.
+        /// </summary>
+        public string FormattedTimestamp => this.CurrentItem?.FormattedTimestamp ?? string.Empty;
 
         /// <summary>
         /// Gets the current image index (1-based).
@@ -78,7 +102,7 @@ namespace Uchat.Client.ViewModels
         public string CurrentImageUrl => this.CurrentImage?.DownloadUrl ?? string.Empty;
 
         /// <summary>
-        /// Gets or sets the current image source.
+        /// Gets the current image source.
         /// </summary>
         public System.Windows.Media.Imaging.BitmapImage? CurrentImageSource
         {
@@ -87,7 +111,7 @@ namespace Uchat.Client.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the image is currently loading.
+        /// Gets a value indicating whether the image is currently loading.
         /// </summary>
         public bool IsLoading
         {
@@ -98,9 +122,9 @@ namespace Uchat.Client.ViewModels
         /// <summary>
         /// Sets the images to display.
         /// </summary>
-        /// <param name="images">The collection of image attachments.</param>
+        /// <param name="images">The collection of image items.</param>
         /// <param name="startIndex">The starting index.</param>
-        public void SetImages(List<MessageAttachmentDto> images, int startIndex)
+        public void SetImages(List<ImagePreviewItem> images, int startIndex)
         {
             this.allImages = images;
             this.currentIndex = Math.Max(0, Math.Min(startIndex, images.Count - 1));
@@ -178,7 +202,7 @@ namespace Uchat.Client.ViewModels
 
         private void UpdateCurrentImage()
         {
-            this.CurrentImage = this.currentIndex >= 0 && this.currentIndex < this.allImages.Count
+            this.CurrentItem = this.currentIndex >= 0 && this.currentIndex < this.allImages.Count
                 ? this.allImages[this.currentIndex]
                 : null;
 
@@ -200,32 +224,47 @@ namespace Uchat.Client.ViewModels
         {
             if (this.CurrentImage == null)
             {
+                this.logger.Warning("LoadCurrentImageAsync: CurrentImage is null");
                 return;
             }
 
             try
             {
+                this.logger.Information("LoadCurrentImageAsync: Starting load for {FileName} (ID: {Id})", this.CurrentImage.FileName, this.CurrentImage.Id);
                 this.IsLoading = true;
 
                 // Load full image for preview
                 Stream imageStream = await this.fileAttachmentService.DownloadImageStreamAsync(this.CurrentImage);
+                this.logger.Information("LoadCurrentImageAsync: Stream downloaded, length: {Length}", imageStream.Length);
 
                 using (imageStream)
                 {
-                    using (var memoryStream = new MemoryStream())
+                    var memoryStream = new MemoryStream();
+                    await imageStream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    this.logger.Information("LoadCurrentImageAsync: Stream copied to memory, length: {Length}", memoryStream.Length);
+
+                    // Create bitmap on UI thread
+                    await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        await imageStream.CopyToAsync(memoryStream);
-                        memoryStream.Position = 0;
+                        try 
+                        {
+                            var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                            bitmap.StreamSource = memoryStream;
+                            bitmap.EndInit();
+                            bitmap.Freeze();
 
-                        var bitmap = new System.Windows.Media.Imaging.BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
-                        bitmap.StreamSource = memoryStream;
-                        bitmap.EndInit();
-                        bitmap.Freeze();
-
-                        this.CurrentImageSource = bitmap;
-                    }
+                            this.CurrentImageSource = bitmap;
+                            this.logger.Information("LoadCurrentImageAsync: Bitmap created and set. Width: {Width}, Height: {Height}", bitmap.PixelWidth, bitmap.PixelHeight);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.Error(ex, "LoadCurrentImageAsync: Failed to create bitmap on UI thread");
+                            throw;
+                        }
+                    });
                 }
             }
             catch (Exception ex)
@@ -236,6 +275,7 @@ namespace Uchat.Client.ViewModels
             finally
             {
                 this.IsLoading = false;
+                this.logger.Information("LoadCurrentImageAsync: Finished. IsLoading set to false.");
             }
         }
     }

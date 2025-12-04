@@ -15,27 +15,27 @@ namespace Uchat.Client.Services
     using Uchat.Shared.Dtos;
     using Uchat.Shared.Helpers;
 
-        /// <summary>
-        /// Implementation of file attachment service for WPF client with robust caching.
-        /// </summary>
-        public class FileAttachmentService : IFileAttachmentService
-        {
-            private readonly HttpClient httpClient;
-            private readonly ILogger logger;
-            private readonly IErrorHandlingService errorHandler;
-            private readonly string downloadPath;
-            private readonly string cachePath;
+    /// <summary>
+    /// Implementation of file attachment service for WPF client with robust caching.
+    /// </summary>
+    public class FileAttachmentService : IFileAttachmentService
+    {
+        private readonly HttpClient httpClient;
+        private readonly ILogger logger;
+        private readonly IErrorHandlingService errorHandler;
+        private readonly string downloadPath;
+        private readonly string cachePath;
 
-            /// <summary>
-            /// Initializes a new instance of the <see cref="FileAttachmentService"/> class.
-            /// </summary>
-            /// <param name="httpClient">The HTTP client for making requests.</param>
-            /// <param name="logger">The logger for logging operations.</param>
-            /// <param name="errorHandler">The error handling service.</param>
-            public FileAttachmentService(
-                HttpClient httpClient,
-                ILogger logger,
-                IErrorHandlingService errorHandler)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileAttachmentService"/> class.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client for making requests.</param>
+        /// <param name="logger">The logger for logging operations.</param>
+        /// <param name="errorHandler">The error handling service.</param>
+        public FileAttachmentService(
+            HttpClient httpClient,
+            ILogger logger,
+            IErrorHandlingService errorHandler)
         {
             this.httpClient = httpClient;
             this.logger = logger;
@@ -96,7 +96,10 @@ namespace Uchat.Client.Services
             try
             {
                 var validation = this.ValidateFile(filePath);
-                if (!validation.IsValid) throw new InvalidOperationException(validation.ErrorMessage);
+                if (!validation.IsValid)
+                {
+                    throw new InvalidOperationException(validation.ErrorMessage);
+                }
 
                 var fileInfo = new FileInfo(filePath);
                 var fileName = fileInfo.Name;
@@ -108,7 +111,11 @@ namespace Uchat.Client.Services
 
                 if (contentStream != null)
                 {
-                    if (contentStream.CanSeek) contentStream.Position = 0;
+                    if (contentStream.CanSeek)
+                    {
+                        contentStream.Position = 0;
+                    }
+
                     streamToUpload = contentStream;
                 }
                 else
@@ -126,7 +133,8 @@ namespace Uchat.Client.Services
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                var attachment = JsonSerializer.Deserialize<MessageAttachmentDto>(json,
+                var attachment = JsonSerializer.Deserialize<MessageAttachmentDto>(
+                    json,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
                     ?? throw new InvalidOperationException("Failed to deserialize attachment");
 
@@ -210,10 +218,13 @@ namespace Uchat.Client.Services
                 {
                     FileName = attachment.FileName,
                     Title = "Save File As",
-                    Filter = $"Current Type (*{Path.GetExtension(attachment.FileName)})|*{Path.GetExtension(attachment.FileName)}|All files (*.*)|*.*"
+                    Filter = $"Current Type (*{Path.GetExtension(attachment.FileName)})|*{Path.GetExtension(attachment.FileName)}|All files (*.*)|*.*",
                 };
 
-                if (saveDialog.ShowDialog() != true) return null;
+                if (saveDialog.ShowDialog() != true)
+                {
+                    return null;
+                }
 
                 var destinationPath = saveDialog.FileName;
                 var cachedPath = this.GetCachedFilePath(attachment);
@@ -224,12 +235,15 @@ namespace Uchat.Client.Services
                 }
                 else
                 {
-                    var response = await this.httpClient.GetAsync(attachment.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                    var response = await this.httpClient.GetAsync(
+                        attachment.DownloadUrl,
+                        HttpCompletionOption.ResponseHeadersRead,
+                        cancellationToken);
                     response.EnsureSuccessStatusCode();
-                    
+
                     using var fs = File.Create(destinationPath);
                     await response.Content.CopyToAsync(fs, cancellationToken);
-                    
+
                     _ = this.CacheLocalFileAsync(destinationPath, attachment);
                 }
 
@@ -296,12 +310,14 @@ namespace Uchat.Client.Services
         /// <returns>A task containing the thumbnail stream.</returns>
         public async Task<Stream> DownloadThumbnailStreamAsync(MessageAttachmentDto attachment, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(attachment.ThumbnailUrl)) throw new InvalidOperationException("No thumbnail URL");
-            
+            if (string.IsNullOrEmpty(attachment.ThumbnailUrl))
+            {
+                throw new InvalidOperationException("No thumbnail URL");
+            }
+
             // Скачиваем миниатюру через механизм кэширования в память
             return await this.GetCachedStreamAsync(attachment, attachment.ThumbnailUrl, cancellationToken, isThumbnail: true);
         }
-
 
         /// <summary>
         /// Validates a file for upload based on type and size restrictions.
@@ -310,22 +326,25 @@ namespace Uchat.Client.Services
         /// <returns>A tuple containing validation result and error message if invalid.</returns>
         public (bool IsValid, string ErrorMessage) ValidateFile(string filePath)
         {
-            if (!File.Exists(filePath)) return (false, "File not found.");
+            if (!File.Exists(filePath))
+            {
+                return (false, "File not found.");
+            }
+
             var fi = new FileInfo(filePath);
-            if (!FileHelper.IsAllowedFileType(fi.Name)) return (false, "File type not allowed.");
+            if (!FileHelper.IsAllowedFileType(fi.Name))
+            {
+                return (false, "File type not allowed.");
+            }
 
             var type = FileHelper.GetAttachmentType(fi.Name);
-            if (!FileHelper.IsValidFileSize(fi.Length, type)) return (false, "File too large.");
+            if (!FileHelper.IsValidFileSize(fi.Length, type))
+            {
+                return (false, "File too large.");
+            }
 
             return (true, string.Empty);
         }
-
-
-        // --- PRIVATE HELPERS ---
-
-        /// <summary>
-        /// Ключевой метод: получает файл (из кэша или сети), загружает его в MemoryStream и возвращает.
-        /// </summary>
 
         // --- PRIVATE HELPERS ---
 
@@ -346,18 +365,21 @@ namespace Uchat.Client.Services
                     {
                         await fs.CopyToAsync(ms, ct);
                     }
+
                     ms.Position = 0; // Сбрасываем позицию, это критично для WPF!
                     return ms;
                 }
                 catch (Exception ex)
                 {
                     this.logger.Warning("Cache read failed, redownloading. Error: {Msg}", ex.Message);
+
                     // Если не удалось прочитать кэш, пробуем скачать заново ниже
                 }
             }
 
             // 2. Скачиваем с сервера
             var response = await this.httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
+
             response.EnsureSuccessStatusCode();
 
             // Сначала качаем во временный файл, чтобы не повредить кэш при обрыве
@@ -369,7 +391,11 @@ namespace Uchat.Client.Services
             }
 
             // Перемещаем в кэш
-            if (File.Exists(cachedPath)) File.Delete(cachedPath);
+            if (File.Exists(cachedPath))
+            {
+                File.Delete(cachedPath);
+            }
+
             File.Move(tempPath, cachedPath);
 
             // 3. Читаем из свежего кэша в память
@@ -378,16 +404,17 @@ namespace Uchat.Client.Services
             {
                 await fs.CopyToAsync(memoryStream, ct);
             }
+
             memoryStream.Position = 0;
             return memoryStream;
         }
-
 
         private async Task CacheLocalFileAsync(string sourcePath, MessageAttachmentDto attachment)
         {
             try
             {
                 var cachedPath = this.GetCachedFilePath(attachment, isThumbnail: false);
+
                 // Ждем немного, чтобы убедиться, что файл освобожден
                 await Task.Delay(100);
                 if (!File.Exists(cachedPath))
@@ -401,14 +428,12 @@ namespace Uchat.Client.Services
             }
         }
 
-
         private string GetCachedFilePath(MessageAttachmentDto attachment, bool isThumbnail = false)
         {
             var ext = Path.GetExtension(attachment.FileName);
             var name = isThumbnail ? $"thumb_{attachment.Id}{ext}" : $"{attachment.Id}{ext}";
             return Path.Combine(this.cachePath, name);
         }
-
 
         private string GetUniqueFilePath(string folder, string fileName)
         {
@@ -420,6 +445,7 @@ namespace Uchat.Client.Services
                 var ext = Path.GetExtension(fileName);
                 path = Path.Combine(folder, $"{name} ({i++}){ext}");
             }
+
             return path;
         }
     }

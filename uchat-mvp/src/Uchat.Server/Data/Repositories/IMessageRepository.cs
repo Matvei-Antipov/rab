@@ -68,13 +68,5 @@ namespace Uchat.Server.Data.Repositories
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A collection of matching messages.</returns>
         Task<IEnumerable<Message>> SearchAsync(string chatId, string query, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Deletes all messages in a chat.
-        /// </summary>
-        /// <param name="chatId">The chat identifier.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        Task DeleteAllByChatIdAsync(string chatId, CancellationToken cancellationToken = default);
     }
 }

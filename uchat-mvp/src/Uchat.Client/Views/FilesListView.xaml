@@ -181,7 +181,7 @@
                                                            FontWeight="SemiBold"
                                                            Foreground="{DynamicResource TextPrimaryBrush}"
                                                            TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Text="{Binding FormattedSize}" 
+                                                <TextBlock Text="{Binding FileSizeFormatted}" 
                                                            FontSize="12"
                                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                                            Margin="0,4,0,0"/>

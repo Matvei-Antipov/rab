@@ -92,7 +92,7 @@ namespace Uchat.Client.ViewModels
             // Initialize search fields to avoid CS8618
             this.chatSearchText = string.Empty;
             this.messageSearchText = string.Empty;
-            
+
             // Initialize profile fields
             this.profileEmail = string.Empty;
             this.profileUsername = string.Empty;
@@ -127,6 +127,11 @@ namespace Uchat.Client.ViewModels
         /// Occurs when audio stop is requested.
         /// </summary>
         public event EventHandler<object>? OnAudioStopRequested;
+
+        /// <summary>
+        /// Occurs when messages are loaded.
+        /// </summary>
+        public event EventHandler? OnMessagesLoaded;
 
         /// <summary>
         /// Gets the conversations collection (Source).
@@ -537,109 +542,6 @@ namespace Uchat.Client.ViewModels
             this.IsUserProfileVisible = false;
         }
 
-        [RelayCommand]
-        private void ShareContact()
-        {
-            if (this.SelectedConversation == null || string.IsNullOrEmpty(this.ProfileUsername))
-            {
-                return;
-            }
-
-            try
-            {
-                var contactInfo = $"@{this.ProfileUsername}";
-                Clipboard.SetText(contactInfo);
-                this.errorHandlingService.ShowInfo($"Contact copied to clipboard: {contactInfo}");
-                this.logger.Information("Contact shared: {Username}", this.ProfileUsername);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex, "Failed to share contact");
-                this.errorHandlingService.ShowError("Failed to copy contact to clipboard.");
-            }
-        }
-
-        [RelayCommand]
-        private async Task BlockUserAsync()
-        {
-            if (this.SelectedConversation == null)
-            {
-                return;
-            }
-
-            try
-            {
-                var currentUserId = this.authenticationService.CurrentUser?.Id ?? string.Empty;
-                var chat = await this.messagingService.GetChatByIdAsync(this.SelectedConversation.Id);
-                var otherUser = chat.Participants.FirstOrDefault(p => p.Id != currentUserId);
-                
-                if (otherUser == null)
-                {
-                    this.errorHandlingService.ShowError("Cannot block this user.");
-                    return;
-                }
-
-                var confirmMessage = "Are you sure you want to block this user? You will no longer receive messages from them.";
-                if (MessageBox.Show(confirmMessage, "Block User", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
-                {
-                    return;
-                }
-
-                await this.messagingService.BlockUserAsync(otherUser.Id);
-                this.errorHandlingService.ShowInfo($"User @{otherUser.Username} has been blocked.");
-                this.logger.Information("User blocked: {UserId}", otherUser.Id);
-                this.CloseUserProfile();
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex, "Failed to block user");
-                this.errorHandlingService.ShowError("Failed to block user. Please try again.");
-            }
-        }
-
-        [RelayCommand]
-        private async Task DeleteChatAsync()
-        {
-            if (this.SelectedConversation == null)
-            {
-                return;
-            }
-
-            try
-            {
-                var confirmMessage = "Are you sure you want to delete this chat? All messages will be permanently removed.";
-                if (MessageBox.Show(confirmMessage, "Delete Chat", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
-                {
-                    return;
-                }
-
-                var chatId = this.SelectedConversation.Id;
-                await this.messagingService.DeleteChatAsync(chatId);
-                
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    var chatToRemove = this.Conversations.FirstOrDefault(c => c.Id == chatId);
-                    if (chatToRemove != null)
-                    {
-                        this.Conversations.Remove(chatToRemove);
-                    }
-
-                    this.SelectedConversation = this.Conversations.FirstOrDefault();
-                    this.Messages.Clear();
-                    this.receivedMessageIds.Clear();
-                });
-
-                this.errorHandlingService.ShowInfo("Chat deleted successfully.");
-                this.logger.Information("Chat deleted: {ChatId}", chatId);
-                this.CloseUserProfile();
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex, "Failed to delete chat");
-                this.errorHandlingService.ShowError("Failed to delete chat. Please try again.");
-            }
-        }
-
         // --- END USER PROFILE MODAL ---
 
         // --- FILES AND IMAGES LIST COMMANDS ---
@@ -652,11 +554,11 @@ namespace Uchat.Client.ViewModels
             }
 
             this.PopulateFilesList();
-            
+
             var filesListViewModel = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<FilesListViewModel>(
                 this.serviceProvider);
             filesListViewModel.SetFiles(this.filesList, this.SelectedConversation.Name ?? "Chat");
-            
+
             this.navigationService.NavigateTo<FilesListViewModel>();
         }
 
@@ -669,16 +571,15 @@ namespace Uchat.Client.ViewModels
             }
 
             this.PopulateImagesList();
-            
+
             var imagesGridViewModel = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ImagesGridViewModel>(
                 this.serviceProvider);
             imagesGridViewModel.SetImages(this.imagesList, this.SelectedConversation.Name ?? "Chat");
-            
+
             this.navigationService.NavigateTo<ImagesGridViewModel>();
         }
 
         // --- END FILES AND IMAGES LIST ---
-
         [RelayCommand(CanExecute = nameof(CanSendMessage))]
         private async Task SendMessageAsync()
         {
@@ -836,11 +737,20 @@ namespace Uchat.Client.ViewModels
 
             try
             {
-                var allImages = this.GetMessageViewModels()
-                    .SelectMany(m => m.Attachments)
-                    .Where(a => a.IsImage && a.AttachmentDto != null)
-                    .Select(a => a.AttachmentDto!)
-                    .ToList();
+                var allImages = new List<ImagePreviewItem>();
+                var messages = this.GetMessageViewModels().OrderBy(m => m.CreatedAt);
+
+                foreach (var message in messages)
+                {
+                    foreach (var att in message.Attachments)
+                    {
+                        if (att.IsImage && att.AttachmentDto != null)
+                        {
+                            var senderName = message.IsCurrentUser ? "You" : (this.SelectedConversation?.Name ?? "Unknown");
+                            allImages.Add(new ImagePreviewItem(att.AttachmentDto, senderName, message.CreatedAt));
+                        }
+                    }
+                }
 
                 if (allImages.Count == 0)
                 {
@@ -848,7 +758,7 @@ namespace Uchat.Client.ViewModels
                     return;
                 }
 
-                var currentIndex = allImages.FindIndex(img => img.Id == attachment.AttachmentDto.Id);
+                var currentIndex = allImages.FindIndex(img => img.Attachment.Id == attachment.AttachmentDto.Id);
                 if (currentIndex < 0)
                 {
                     currentIndex = 0;
@@ -1126,6 +1036,9 @@ namespace Uchat.Client.ViewModels
                 }
 
                 this.CalculateProfileStatistics();
+
+                // Notify UI to scroll to bottom
+                this.OnMessagesLoaded?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
@@ -1144,8 +1057,8 @@ namespace Uchat.Client.ViewModels
                 .SelectMany(m => m.Attachments)
                 .ToList();
 
-            this.FilesCount = allAttachments.Count(a => a.AttachmentType == AttachmentType.Document || 
-                                                        a.AttachmentType == AttachmentType.Archive || 
+            this.FilesCount = allAttachments.Count(a => a.AttachmentType == AttachmentType.Document ||
+                                                        a.AttachmentType == AttachmentType.Archive ||
                                                         a.AttachmentType == AttachmentType.Code ||
                                                         a.AttachmentType == AttachmentType.Audio);
             this.ImagesCount = allAttachments.Count(a => a.AttachmentType == AttachmentType.Image);
@@ -1157,8 +1070,8 @@ namespace Uchat.Client.ViewModels
             var messageViewModels = this.GetMessageViewModels();
             var files = messageViewModels
                 .SelectMany(m => m.Attachments)
-                .Where(a => a.AttachmentType == AttachmentType.Document || 
-                           a.AttachmentType == AttachmentType.Archive || 
+                .Where(a => a.AttachmentType == AttachmentType.Document ||
+                           a.AttachmentType == AttachmentType.Archive ||
                            a.AttachmentType == AttachmentType.Code ||
                            a.AttachmentType == AttachmentType.Audio)
                 .OrderByDescending(a => a.AttachmentDto?.UploadedAt)
@@ -1197,7 +1110,7 @@ namespace Uchat.Client.ViewModels
         {
             // Populate images list for profile display
             this.PopulateImagesList();
-            
+
             // Initialize thumbnails for profile images (first 6 for preview)
             foreach (var image in this.imagesList.Take(6))
             {
@@ -1219,7 +1132,7 @@ namespace Uchat.Client.ViewModels
         {
             // Populate files list for profile display
             this.PopulateFilesList();
-            
+
             // Initialize thumbnails for image files in profile (first 6 for preview)
             foreach (var file in this.filesList.Take(6))
             {
@@ -1248,7 +1161,7 @@ namespace Uchat.Client.ViewModels
             {
                 var chat = await this.messagingService.GetChatByIdAsync(this.SelectedConversation.Id);
                 var currentUserId = this.authenticationService.CurrentUser?.Id ?? string.Empty;
-                
+
                 var otherUser = chat.Participants.FirstOrDefault(p => p.Id != currentUserId);
                 if (otherUser != null)
                 {

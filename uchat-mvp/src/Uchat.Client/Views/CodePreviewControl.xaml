@@ -3,15 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit"
              Background="#1E1E1E">
-    
-    <UserControl.Resources>
-        <!-- VS Code Dark Theme Colors - Self-contained resources -->
-        <SolidColorBrush x:Key="CodeBackgroundBrush" Color="#1E1E1E"/>
-        <SolidColorBrush x:Key="CodeHeaderBackgroundBrush" Color="#252526"/>
-        <SolidColorBrush x:Key="CodeBorderBrush" Color="#3E3E42"/>
-        <SolidColorBrush x:Key="CodeTextBrush" Color="#CCCCCC"/>
-        <SolidColorBrush x:Key="CodeTextSecondaryBrush" Color="#858585"/>
-    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>

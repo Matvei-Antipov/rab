@@ -12,18 +12,6 @@
         ResizeMode="CanResizeWithGrip">
     
     <Window.Resources>
-        <!-- VS Code Dark Theme Colors - Self-contained resources -->
-        <SolidColorBrush x:Key="CodeBackgroundBrush" Color="#1E1E1E"/>
-        <SolidColorBrush x:Key="CodeHeaderBackgroundBrush" Color="#252526"/>
-        <SolidColorBrush x:Key="CodeBorderBrush" Color="#3E3E42"/>
-        <SolidColorBrush x:Key="CodeTextBrush" Color="#CCCCCC"/>
-        <SolidColorBrush x:Key="CodeTextSecondaryBrush" Color="#858585"/>
-        <SolidColorBrush x:Key="CodeButtonBackgroundBrush" Color="#2D2D30"/>
-        <SolidColorBrush x:Key="CodeButtonHoverBrush" Color="#3E3E42"/>
-        <SolidColorBrush x:Key="CodeButtonPressedBrush" Color="#007ACC"/>
-        <SolidColorBrush x:Key="CodeCloseButtonBrush" Color="#3A3A3A"/>
-        
-        <!-- Modern Button Style with hardcoded colors -->
         <Style x:Key="ModernButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#2D2D30"/>
             <Setter Property="Foreground" Value="#CCCCCC"/>

@@ -20,7 +20,6 @@ namespace Uchat.Server.Services
     {
         private readonly IChatRepository chatRepository;
         private readonly IUserRepository userRepository;
-        private readonly IMessageRepository messageRepository;
         private readonly IIdGenerator idGenerator;
         private readonly IClock clock;
         private readonly ILogger logger;
@@ -31,7 +30,6 @@ namespace Uchat.Server.Services
         /// </summary>
         /// <param name="chatRepository">Chat repository.</param>
         /// <param name="userRepository">User repository.</param>
-        /// <param name="messageRepository">Message repository.</param>
         /// <param name="idGenerator">ID generator.</param>
         /// <param name="clock">Clock for timestamps.</param>
         /// <param name="logger">Logger.</param>
@@ -39,7 +37,6 @@ namespace Uchat.Server.Services
         public ChatService(
             IChatRepository chatRepository,
             IUserRepository userRepository,
-            IMessageRepository messageRepository,
             IIdGenerator idGenerator,
             IClock clock,
             ILogger logger,
@@ -47,7 +44,6 @@ namespace Uchat.Server.Services
         {
             this.chatRepository = chatRepository;
             this.userRepository = userRepository;
-            this.messageRepository = messageRepository;
             this.idGenerator = idGenerator;
             this.clock = clock;
             this.logger = logger;
@@ -135,18 +131,6 @@ namespace Uchat.Server.Services
             chatDto.Participants = participantDtos;
 
             return chatDto;
-        }
-
-        /// <inheritdoc/>
-        public async Task DeleteChatAsync(string chatId, CancellationToken cancellationToken = default)
-        {
-            this.logger.Information("Deleting chat {ChatId}", chatId);
-
-            await this.messageRepository.DeleteAllByChatIdAsync(chatId, cancellationToken);
-            this.logger.Information("Deleted all messages for chat {ChatId}", chatId);
-
-            await this.chatRepository.DeleteAsync(chatId, cancellationToken);
-            this.logger.Information("Chat {ChatId} deleted successfully", chatId);
         }
 
         private ChatDto MapToDto(Chat chat)

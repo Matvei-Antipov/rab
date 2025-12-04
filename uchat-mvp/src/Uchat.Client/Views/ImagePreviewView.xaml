@@ -11,9 +11,9 @@
              TextOptions.TextFormattingMode="Display">
 
     <UserControl.Resources>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
-        
+
         <Style x:Key="NavCircleButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="50"/>
             <Setter Property="Height" Value="50"/>
@@ -151,8 +151,7 @@
                     <!-- Image -->
                     <Image Source="{Binding CurrentImageSource}"
                            MaxWidth="1200"
-                           MaxHeight="800"
-                           Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                           MaxHeight="800"/>
                 </Grid>
             </Viewbox>
 
@@ -167,7 +166,7 @@
         </Grid>
 
         <!-- Bottom Info Bar -->
-        <Grid VerticalAlignment="Bottom" Height="80">
+        <Grid VerticalAlignment="Bottom" Height="100">
             <Grid.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Color="#00000000" Offset="0"/>
@@ -176,18 +175,28 @@
             </Grid.Background>
 
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding CurrentImage.FileName}"
-                           FontSize="16"
+                <TextBlock Text="{Binding SenderName}"
+                           FontSize="14"
                            FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,4"/>
+                <TextBlock Text="{Binding FormattedTimestamp}"
+                           FontSize="13"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8"/>
+                <TextBlock Text="{Binding CurrentImage.FileName}"
+                           FontSize="13"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
                            HorizontalAlignment="Center"
                            TextTrimming="CharacterEllipsis"
                            MaxWidth="600"/>
                 <TextBlock Text="{Binding CurrentImage.FormattedSize}"
-                           FontSize="13"
-                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
                            HorizontalAlignment="Center"
-                           Margin="0,5,0,0"/>
+                           Margin="0,2,0,0"/>
             </StackPanel>
         </Grid>
     </Grid>

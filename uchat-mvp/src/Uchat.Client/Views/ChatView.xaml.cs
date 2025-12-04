@@ -32,6 +32,7 @@ namespace Uchat.Client.Views
                 viewModel.OnAudioPlayRequested += this.ViewModel_OnAudioPlayRequested;
                 viewModel.OnAudioPlayPauseRequested += this.ViewModel_OnAudioPlayPauseRequested;
                 viewModel.OnAudioStopRequested += this.ViewModel_OnAudioStopRequested;
+                viewModel.OnMessagesLoaded += this.ViewModel_OnMessagesLoaded;
             }
         }
 
@@ -42,6 +43,7 @@ namespace Uchat.Client.Views
                 viewModel.OnAudioPlayRequested -= this.ViewModel_OnAudioPlayRequested;
                 viewModel.OnAudioPlayPauseRequested -= this.ViewModel_OnAudioPlayPauseRequested;
                 viewModel.OnAudioStopRequested -= this.ViewModel_OnAudioStopRequested;
+                viewModel.OnMessagesLoaded -= this.ViewModel_OnMessagesLoaded;
             }
 
             this.mediaPlayer.Close();
@@ -79,6 +81,17 @@ namespace Uchat.Client.Views
         private void ViewModel_OnAudioStopRequested(object? sender, object e)
         {
             this.mediaPlayer.Stop();
+        }
+
+        private void ViewModel_OnMessagesLoaded(object? sender, EventArgs e)
+        {
+            // Scroll to bottom when messages are loaded
+            this.Dispatcher.InvokeAsync(
+                () =>
+                {
+                    this.MessagesScrollViewer.ScrollToBottom();
+                },
+                System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
         private void MessagesScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)

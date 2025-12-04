@@ -211,6 +211,18 @@ namespace Uchat.Client.ViewModels
         }
 
         /// <summary>
+        /// Initializes the attachment asynchronously (loads thumbnail if it's an image).
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task InitializeAsync()
+        {
+            if (this.IsImage && this.AttachmentDto != null && this.fileAttachmentService != null)
+            {
+                await this.LoadThumbnailFromServiceAsync(this.AttachmentDto);
+            }
+        }
+
+        /// <summary>
         /// Loads a thumbnail image from the file path.
         /// </summary>
         /// <param name="imagePath">The path to the image file.</param>
@@ -232,30 +244,6 @@ namespace Uchat.Client.ViewModels
             {
                 // Failed to load thumbnail - will show icon instead
                 this.ThumbnailImage = null;
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously initializes the attachment view model.
-        /// </summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task InitializeAsync()
-        {
-            if (this.AttachmentDto != null && this.IsImage && this.fileAttachmentService != null)
-            {
-                await this.LoadThumbnailFromServiceAsync(this.AttachmentDto);
-            }
-        }
-
-        /// <summary>
-        /// Reloads the thumbnail image for this attachment.
-        /// </summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task ReloadThumbnailAsync()
-        {
-            if (this.AttachmentDto != null && this.IsImage && this.fileAttachmentService != null)
-            {
-                await this.LoadThumbnailFromServiceAsync(this.AttachmentDto);
             }
         }
 
