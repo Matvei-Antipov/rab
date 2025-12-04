@@ -126,8 +126,13 @@ namespace Uchat.Client.ViewModels
         /// <param name="startIndex">The starting index.</param>
         public void SetImages(List<ImagePreviewItem> images, int startIndex)
         {
-            this.allImages = images;
-            this.currentIndex = Math.Max(0, Math.Min(startIndex, images.Count - 1));
+            this.logger.Information("SetImages: Received {ImageCount} images, startIndex: {StartIndex}", images?.Count ?? 0, startIndex);
+            
+            this.allImages = images ?? new List<ImagePreviewItem>();
+            this.currentIndex = Math.Max(0, Math.Min(startIndex, this.allImages.Count - 1));
+            
+            this.logger.Information("SetImages: Set currentIndex to {Index}, TotalImages: {Total}", this.currentIndex, this.allImages.Count);
+            
             this.UpdateCurrentImage();
         }
 
@@ -202,9 +207,14 @@ namespace Uchat.Client.ViewModels
 
         private void UpdateCurrentImage()
         {
+            this.logger.Information("UpdateCurrentImage: currentIndex={Index}, allImages.Count={Count}", this.currentIndex, this.allImages.Count);
+            
             this.CurrentItem = this.currentIndex >= 0 && this.currentIndex < this.allImages.Count
                 ? this.allImages[this.currentIndex]
                 : null;
+
+            this.logger.Information("UpdateCurrentImage: CurrentItem set to {Item}, CurrentImageNumber={Number}", 
+                this.CurrentItem?.Attachment?.FileName ?? "null", this.CurrentImageNumber);
 
             this.OnPropertyChanged(nameof(this.CurrentImageNumber));
             this.OnPropertyChanged(nameof(this.HasPrevious));
@@ -216,7 +226,12 @@ namespace Uchat.Client.ViewModels
             // Load image for current attachment
             if (this.CurrentImage != null)
             {
+                this.logger.Information("UpdateCurrentImage: Loading image {FileName}", this.CurrentImage.FileName);
                 _ = this.LoadCurrentImageAsync();
+            }
+            else
+            {
+                this.logger.Warning("UpdateCurrentImage: CurrentImage is null, not loading");
             }
         }
 
