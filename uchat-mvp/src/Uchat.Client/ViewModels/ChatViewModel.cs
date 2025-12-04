@@ -580,6 +580,7 @@ namespace Uchat.Client.ViewModels
         }
 
         // --- END FILES AND IMAGES LIST ---
+
         [RelayCommand(CanExecute = nameof(CanSendMessage))]
         private async Task SendMessageAsync()
         {
@@ -739,6 +740,8 @@ namespace Uchat.Client.ViewModels
             {
                 var allImages = new List<ImagePreviewItem>();
                 var messages = this.GetMessageViewModels().OrderBy(m => m.CreatedAt);
+                
+                this.logger.Information("ViewImage: Found {MessageCount} messages", messages.Count());
 
                 foreach (var message in messages)
                 {
@@ -747,10 +750,13 @@ namespace Uchat.Client.ViewModels
                         if (att.IsImage && att.AttachmentDto != null)
                         {
                             var senderName = message.IsCurrentUser ? "You" : (this.SelectedConversation?.Name ?? "Unknown");
-                            allImages.Add(new ImagePreviewItem(att.AttachmentDto, senderName, message.CreatedAt));
+                            allImages.Add(new ImagePreviewItem(att.AttachmentDto, senderName, att.AttachmentDto.UploadedAt));
+                            this.logger.Information("ViewImage: Added image {FileName} from message {MessageId}", att.AttachmentDto.FileName, message.Id);
                         }
                     }
                 }
+
+                this.logger.Information("ViewImage: Total images found: {ImageCount}", allImages.Count);
 
                 if (allImages.Count == 0)
                 {
@@ -764,12 +770,15 @@ namespace Uchat.Client.ViewModels
                     currentIndex = 0;
                 }
 
+                this.logger.Information("ViewImage: Current index: {Index}, Attachment ID: {AttachmentId}", currentIndex, attachment.AttachmentDto.Id);
+
                 // Use ImagePreviewViewModel and navigate to ImagePreviewView
                 var imagePreviewViewModel = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ImagePreviewViewModel>(
                     this.serviceProvider);
                 if (imagePreviewViewModel != null)
                 {
                     imagePreviewViewModel.SetImages(allImages, currentIndex);
+                    this.logger.Information("ViewImage: SetImages called, navigating to ImagePreviewViewModel");
                     this.navigationService.NavigateTo<ImagePreviewViewModel>();
                 }
                 else
