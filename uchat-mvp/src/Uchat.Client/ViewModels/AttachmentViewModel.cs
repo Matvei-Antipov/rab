@@ -67,6 +67,9 @@ namespace Uchat.Client.ViewModels
             this.AttachmentDto = dto;
             this.fileAttachmentService = fileAttachmentService;
 
+            Log.Information("AttachmentViewModel: Created from DTO - {FileName}, Type: {Type}, IsImage: {IsImage}, DownloadUrl: {Url}", 
+                dto.FileName, dto.AttachmentType, this.IsImage, string.IsNullOrEmpty(dto.DownloadUrl) ? "NULL" : dto.DownloadUrl);
+
             // Initialize asynchronously - don't block constructor
             if (this.IsImage && fileAttachmentService != null)
             {

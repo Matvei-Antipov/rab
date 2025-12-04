@@ -40,5 +40,23 @@ namespace Uchat.Client.ViewModels
         /// Gets the formatted timestamp string.
         /// </summary>
         public string FormattedTimestamp => this.Timestamp.ToString("dd MMM yyyy, HH:mm");
+
+        /// <summary>
+        /// Gets the formatted file size string.
+        /// </summary>
+        public string FormattedSize => this.FormatFileSize(this.Attachment.FileSize);
+
+        private string FormatFileSize(long bytes)
+        {
+            string[] suffixes = { "B", "KB", "MB", "GB" };
+            int counter = 0;
+            decimal number = bytes;
+            while (Math.Round(number / 1024) >= 1)
+            {
+                number /= 1024;
+                counter++;
+            }
+            return $"{number:n1} {suffixes[counter]}";
+        }
     }
 }

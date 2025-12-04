@@ -129,6 +129,20 @@ namespace Uchat.Client.ViewModels
             this.logger.Information("SetImages: Received {ImageCount} images, startIndex: {StartIndex}", images?.Count ?? 0, startIndex);
             
             this.allImages = images ?? new List<ImagePreviewItem>();
+            
+            if (this.allImages.Count == 0)
+            {
+                this.logger.Warning("SetImages: No images provided");
+                this.currentIndex = 0;
+                this.CurrentItem = null;
+                this.CurrentImageSource = null;
+                this.OnPropertyChanged(nameof(this.CurrentImageNumber));
+                this.OnPropertyChanged(nameof(this.TotalImages));
+                this.OnPropertyChanged(nameof(this.HasPrevious));
+                this.OnPropertyChanged(nameof(this.HasNext));
+                return;
+            }
+            
             this.currentIndex = Math.Max(0, Math.Min(startIndex, this.allImages.Count - 1));
             
             this.logger.Information("SetImages: Set currentIndex to {Index}, TotalImages: {Total}", this.currentIndex, this.allImages.Count);
@@ -250,8 +264,7 @@ namespace Uchat.Client.ViewModels
 
                 // Load full image for preview
                 Stream imageStream = await this.fileAttachmentService.DownloadImageStreamAsync(this.CurrentImage);
-                this.logger.Information("LoadCurrentImageAsync: Stream downloaded, length: {Length}", imageStream.Length);
-
+                
                 using (imageStream)
                 {
                     var memoryStream = new MemoryStream();
@@ -277,14 +290,14 @@ namespace Uchat.Client.ViewModels
                         catch (Exception ex)
                         {
                             this.logger.Error(ex, "LoadCurrentImageAsync: Failed to create bitmap on UI thread");
-                            throw;
+                            this.CurrentImageSource = null;
                         }
                     });
                 }
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Failed to load image for preview");
+                this.logger.Error(ex, "Failed to load image for preview: {Error}", ex.Message);
                 this.CurrentImageSource = null;
             }
             finally

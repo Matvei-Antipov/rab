@@ -129,6 +129,15 @@
                                    VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
+                        <!-- Error message -->
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   Visibility="{Binding HasImage, Converter={StaticResource InverseBooleanConverter}}">
+                            <TextBlock Text="&#xE783;" FontFamily="Segoe MDL2 Assets" FontSize="48" 
+                                       Foreground="#FF6B6B" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Failed to load image" Foreground="#FF6B6B" FontSize="14" 
+                                       HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                        </StackPanel>
+
                         <!-- Actual Image with Transform for zoom -->
                         <Image x:Name="ImageView" 
                                Source="{Binding ImageSource}" 

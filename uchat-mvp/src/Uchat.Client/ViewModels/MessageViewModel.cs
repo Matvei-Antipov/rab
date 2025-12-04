@@ -5,6 +5,7 @@ namespace Uchat.Client.ViewModels
     using System.Collections.ObjectModel;
     using System.Linq;
     using CommunityToolkit.Mvvm.ComponentModel;
+    using Serilog;
     using Uchat.Client.Services;
     using Uchat.Shared.Dtos;
     using Uchat.Shared.Enums;
@@ -45,6 +46,20 @@ namespace Uchat.Client.ViewModels
             this.editedAt = messageDto.EditedAt;
             this.isDeleted = messageDto.IsDeleted;
             this.isCurrentUser = messageDto.SenderId == currentUserId;
+            
+            // Log attachment information for debugging
+            Log.Information("MessageViewModel: Creating for message {MessageId} with {AttachmentCount} attachments", 
+                messageDto.Id, messageDto.Attachments?.Count ?? 0);
+                
+            if (messageDto.Attachments != null)
+            {
+                foreach (var attachment in messageDto.Attachments)
+                {
+                    Log.Information("MessageViewModel: Attachment {Id} - {FileName}, Type: {Type}, HasDownloadUrl: {HasUrl}", 
+                        attachment.Id, attachment.FileName, attachment.AttachmentType, !string.IsNullOrEmpty(attachment.DownloadUrl));
+                }
+            }
+            
             this.attachments = new ObservableCollection<AttachmentViewModel>(
                 messageDto.Attachments?.Select(a => new AttachmentViewModel(a, fileAttachmentService)) ?? Enumerable.Empty<AttachmentViewModel>());
 
@@ -63,10 +78,13 @@ namespace Uchat.Client.ViewModels
                 {
                     try
                     {
+                        Log.Information("MessageViewModel: Initializing attachment {FileName}", attachment.FileName);
                         await attachment.InitializeAsync();
+                        Log.Information("MessageViewModel: Successfully initialized attachment {FileName}", attachment.FileName);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Log.Error(ex, "MessageViewModel: Failed to initialize attachment {FileName}", attachment.FileName);
                         // Ignore errors during initialization
                     }
                 }

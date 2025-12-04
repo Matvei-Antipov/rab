@@ -231,13 +231,15 @@ namespace Uchat.Client.ViewModels
                         bitmap.Freeze(); // Make it thread-safe
 
                         this.ImageSource = bitmap;
+                        this.HasImage = true;
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Failed to load image - will show error message
                 this.HasImage = false;
+                this.ImageSource = null;
             }
             finally
             {

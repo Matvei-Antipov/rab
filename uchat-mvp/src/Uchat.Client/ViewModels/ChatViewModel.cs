@@ -733,6 +733,7 @@ namespace Uchat.Client.ViewModels
         {
             if (attachment?.AttachmentDto == null || !attachment.IsImage)
             {
+                this.logger.Warning("ViewImage: Invalid attachment or not an image");
                 return;
             }
 
@@ -745,13 +746,21 @@ namespace Uchat.Client.ViewModels
 
                 foreach (var message in messages)
                 {
-                    foreach (var att in message.Attachments)
+                    this.logger.Information("ViewImage: Processing message {MessageId} with {AttachmentCount} attachments", message.Id, message.Attachments?.Count ?? 0);
+                    
+                    if (message.Attachments != null)
                     {
-                        if (att.IsImage && att.AttachmentDto != null)
+                        foreach (var att in message.Attachments)
                         {
-                            var senderName = message.IsCurrentUser ? "You" : (this.SelectedConversation?.Name ?? "Unknown");
-                            allImages.Add(new ImagePreviewItem(att.AttachmentDto, senderName, att.AttachmentDto.UploadedAt));
-                            this.logger.Information("ViewImage: Added image {FileName} from message {MessageId}", att.AttachmentDto.FileName, message.Id);
+                            this.logger.Information("ViewImage: Checking attachment {FileName}, IsImage: {IsImage}, HasDto: {HasDto}", 
+                                att.FileName, att.IsImage, att.AttachmentDto != null);
+                                
+                            if (att.IsImage && att.AttachmentDto != null)
+                            {
+                                var senderName = message.IsCurrentUser ? "You" : (this.SelectedConversation?.Name ?? "Unknown");
+                                allImages.Add(new ImagePreviewItem(att.AttachmentDto, senderName, att.AttachmentDto.UploadedAt));
+                                this.logger.Information("ViewImage: Added image {FileName} from message {MessageId}", att.AttachmentDto.FileName, message.Id);
+                            }
                         }
                     }
                 }
@@ -760,13 +769,15 @@ namespace Uchat.Client.ViewModels
 
                 if (allImages.Count == 0)
                 {
-                    this.errorHandlingService.ShowError("No images found");
+                    this.logger.Warning("ViewImage: No images found in any messages");
+                    this.errorHandlingService.ShowError("No images found in conversation");
                     return;
                 }
 
                 var currentIndex = allImages.FindIndex(img => img.Attachment.Id == attachment.AttachmentDto.Id);
                 if (currentIndex < 0)
                 {
+                    this.logger.Warning("ViewImage: Current attachment not found in list, using index 0");
                     currentIndex = 0;
                 }
 
@@ -783,6 +794,7 @@ namespace Uchat.Client.ViewModels
                 }
                 else
                 {
+                    this.logger.Error("ViewImage: Failed to get ImagePreviewViewModel from service provider");
                     this.errorHandlingService.ShowError("Failed to initialize image preview");
                 }
             }

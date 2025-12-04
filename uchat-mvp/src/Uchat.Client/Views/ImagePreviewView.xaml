@@ -148,6 +148,22 @@
                                VerticalAlignment="Center"
                                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
+                    <!-- Error message -->
+                    <StackPanel HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"
+                               Visibility="{Binding CurrentImageSource, Converter={StaticResource NullToVisibilityConverter}}">
+                        <TextBlock Text="&#xE783;" 
+                                   FontFamily="Segoe MDL2 Assets" 
+                                   FontSize="48"
+                                   Foreground="{DynamicResource ErrorColorBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Failed to load image"
+                                   Foreground="{DynamicResource ErrorColorBrush}"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,10,0,0"/>
+                    </StackPanel>
+
                     <!-- Image -->
                     <Image Source="{Binding CurrentImageSource}"
                            MaxWidth="1200"
